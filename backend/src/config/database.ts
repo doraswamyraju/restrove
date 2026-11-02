@@ -123,12 +123,22 @@ export function initDatabase() {
     );
   `);
 
-  // Ensure image_url column exists in items table
+  // Auto-migrate tables for new columns
   try {
     db.prepare('ALTER TABLE items ADD COLUMN image_url TEXT').run();
-  } catch (e) {
-    // Column already exists
-  }
+  } catch (e) {}
+
+  try {
+    db.prepare('ALTER TABLE items ADD COLUMN tag TEXT DEFAULT "Fresh"').run();
+  } catch (e) {}
+
+  try {
+    db.prepare('ALTER TABLE items ADD COLUMN image_emoji TEXT DEFAULT "☕"').run();
+  } catch (e) {}
+
+  try {
+    db.prepare('ALTER TABLE inventory_items ADD COLUMN category TEXT DEFAULT "Raw Materials"').run();
+  } catch (e) {}
 
   // Auto seed real Chai Wala categories & items if empty
   const catCount: any = db.prepare('SELECT COUNT(*) as c FROM categories').get();
