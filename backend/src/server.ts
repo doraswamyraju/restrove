@@ -53,6 +53,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`[Chai Wala POS] Running strictly on port ${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`[Chai Wala POS] Running strictly on 0.0.0.0:${PORT}`);
 });
