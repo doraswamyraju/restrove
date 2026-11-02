@@ -68,3 +68,4 @@ inventoryRouter.post('/', (req: Request, res: Response) => {
 
   res.json({ success: true, id });
 });
+

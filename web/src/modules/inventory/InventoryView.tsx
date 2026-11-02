@@ -231,3 +231,4 @@ export const InventoryView: React.FC = () => {
     </div>
   );
 };
+

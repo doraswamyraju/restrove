@@ -18,3 +18,4 @@ customersRouter.get('/', (req: Request, res: Response) => {
   const customers = db.prepare(query).all(...params);
   res.json({ customers });
 });
+

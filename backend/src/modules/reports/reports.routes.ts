@@ -37,3 +37,4 @@ reportsRouter.get('/summary', (req: Request, res: Response) => {
     topItems
   });
 });
+

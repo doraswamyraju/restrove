@@ -7,7 +7,7 @@ import {
   FileText, 
   Save
 } from 'lucide-react';
-import chaiWalaLogoImg from '../assets/chai-wala-logo.jpg';
+import chaiWalaLogoImg from '../../assets/chai-wala-logo.jpg';
 
 export const SettingsView: React.FC = () => {
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
@@ -252,3 +252,4 @@ export const SettingsView: React.FC = () => {
     </div>
   );
 };
+
