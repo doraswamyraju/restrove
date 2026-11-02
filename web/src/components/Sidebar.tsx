@@ -1,14 +1,14 @@
 import { 
   Receipt, 
   ClipboardList, 
-  UtensilsCrossed, 
+  Coffee, 
   Package, 
   Users, 
   Wallet, 
   BarChart3, 
   Settings
 } from 'lucide-react';
-import logoDark from '../assets/logo-dark.svg';
+import chaiWalaLogo from '../assets/chai-wala-dark.svg';
 
 interface SidebarProps {
   activeTab: string;
@@ -18,23 +18,21 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const navItems = [
     { id: 'pos', label: 'POS (Billing)', icon: Receipt },
-    { id: 'orders', label: 'Orders', icon: ClipboardList, badge: '142' },
+    { id: 'orders', label: 'Orders', icon: ClipboardList, badge: '86' },
     { id: 'wallet', label: 'Customer Wallet', icon: Wallet },
-    { id: 'menu', label: 'Menu & Modifiers', icon: UtensilsCrossed },
-    { id: 'inventory', label: 'Inventory', icon: Package },
-    { id: 'customers', label: 'Customers', icon: Users },
+    { id: 'menu', label: 'Chai & Snacks Menu', icon: Coffee },
+    { id: 'inventory', label: 'Milk & Stock Inventory', icon: Package },
+    { id: 'customers', label: 'Regular Customers', icon: Users },
     { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'settings', label: 'Cafeteria Settings', icon: Settings },
   ];
 
   return (
-    <aside className="w-64 bg-[#091E3A] text-white flex flex-col justify-between h-screen select-none shrink-0 border-r border-[#152E52]">
+    <aside className="w-64 bg-[#142E25] text-white flex flex-col justify-between h-screen select-none shrink-0 border-r border-[#1E4336]">
       <div>
-        {/* Brand Header */}
-        <div className="p-4 border-b border-[#1A3860] flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img src={logoDark} alt="Restrove" className="h-10 w-auto object-contain" />
-          </div>
+        {/* Brand Header with Exact Chai Wala Original Branding */}
+        <div className="p-3.5 border-b border-[#214B3C] bg-[#11271F] flex items-center justify-center">
+          <img src={chaiWalaLogo} alt="Chai Wala Original" className="h-12 w-auto object-contain" />
         </div>
 
         {/* Navigation List */}
@@ -48,17 +46,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-[#6C47FF] text-white shadow-lg shadow-[#6C47FF]/30'
-                    : 'text-slate-300 hover:bg-[#132E54] hover:text-white'
+                    ? 'bg-[#2E7D32] text-white shadow-lg shadow-[#2E7D32]/30'
+                    : 'text-slate-300 hover:bg-[#1C3E32] hover:text-white'
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-emerald-400'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
                   <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-[#1E3A66] text-slate-300'
+                    isActive ? 'bg-white/20 text-white' : 'bg-[#244E40] text-emerald-200'
                   }`}>
                     {item.badge}
                   </span>
@@ -69,13 +67,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         </nav>
       </div>
 
-      {/* Outlet Details & Plan */}
-      <div className="p-4 m-3 bg-[#102A4E] rounded-xl border border-[#1A3E6D]">
-        <div className="flex items-center space-x-2 text-amber-400 mb-1">
-          <span className="text-xs font-bold uppercase tracking-wider">👑 Single-Unit Plan</span>
+      {/* Outlet Details & Cafeteria Plan */}
+      <div className="p-4 m-3 bg-[#1C3E32] rounded-xl border border-[#2B5E4C]">
+        <div className="flex items-center space-x-2 text-emerald-300 mb-1">
+          <span className="text-xs font-bold uppercase tracking-wider">☕ Cafeteria Outlet</span>
         </div>
-        <div className="text-xs font-semibold text-white">Restaurant Bistro</div>
-        <div className="text-[11px] text-slate-400">Main Outlet • Tirupati</div>
+        <div className="text-xs font-bold text-white">Chai Wala Original</div>
+        <div className="text-[11px] text-emerald-200/70">Main Branch • Fresh Chai &amp; Buns</div>
       </div>
     </aside>
   );

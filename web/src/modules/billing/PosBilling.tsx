@@ -3,15 +3,13 @@ import {
   Search, 
   Plus, 
   Minus, 
-  Trash2, 
   CreditCard, 
   Banknote, 
   QrCode, 
   Wallet as WalletIcon, 
   CheckCircle2, 
-  Percent,
   User,
-  ShoppingBag
+  Coffee
 } from 'lucide-react';
 
 interface CartItem {
@@ -19,38 +17,42 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  isVeg: boolean;
+  category: string;
 }
 
 export const PosBilling: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [serviceType, setServiceType] = useState<'Takeaway' | 'Delivery' | 'Dine In'>('Takeaway');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [walletBalance, setWalletBalance] = useState<number | null>(450.00);
-  const [discountPercent, setDiscountPercent] = useState<number>(0);
+  const [serviceType, setServiceType] = useState<'Takeaway' | 'Dine In'>('Takeaway');
+  const [customerPhone, setCustomerPhone] = useState('9876543210');
+  const [customerName, setCustomerName] = useState('Doraswamy Raju');
+  const [walletBalance] = useState<number>(380.00);
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card' | 'Wallet'>('UPI');
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Sample catalog items
-  const categories = ['All', 'Starters', 'Main Course', 'Biryani', 'Breads', 'Beverages'];
+  // Cafeteria specific menu: Milk, Chai varieties, Coffee, Maska Buns, Biscuits, Samosas
+  const categories = ['All', 'Special Chai', 'Coffee & Milk', 'Maska Buns', 'Hot Snacks', 'Biscuits & Bakery'];
+
   const [menuItems] = useState([
-    { id: '1', name: 'Paneer Tikka', category: 'Starters', price: 280, isVeg: true, image: '🍢' },
-    { id: '2', name: 'Chicken Tikka', category: 'Starters', price: 320, isVeg: false, image: '🍗' },
-    { id: '3', name: 'Veg Biryani', category: 'Biryani', price: 260, isVeg: true, image: '🍚' },
-    { id: '4', name: 'Chicken Biryani', category: 'Biryani', price: 320, isVeg: false, image: '🍲' },
-    { id: '5', name: 'Butter Naan', category: 'Breads', price: 60, isVeg: true, image: '🫓' },
-    { id: '6', name: 'Chicken Curry', category: 'Main Course', price: 330, isVeg: false, image: '🍛' },
-    { id: '7', name: 'Paneer Butter Masala', category: 'Main Course', price: 290, isVeg: true, image: '🥘' },
-    { id: '8', name: 'Mango Lassi', category: 'Beverages', price: 110, isVeg: true, image: '🥭' },
+    { id: '1', name: 'Irani Dum Chai', category: 'Special Chai', price: 20, image: '☕', tag: 'Bestseller' },
+    { id: '2', name: 'Ginger Elaichi Chai', category: 'Special Chai', price: 25, image: '🫖', tag: 'Fresh Spiced' },
+    { id: '3', name: 'Masala Chai', category: 'Special Chai', price: 25, image: '☕', tag: 'Traditional' },
+    { id: '4', name: 'Filter Coffee', category: 'Coffee & Milk', price: 30, image: '☕', tag: 'South Indian' },
+    { id: '5', name: 'Hot Badam Milk', category: 'Coffee & Milk', price: 40, image: '🥛', tag: 'Rich & Creamy' },
+    { id: '6', name: 'Turmeric Golden Milk', category: 'Coffee & Milk', price: 35, image: '🥛', tag: 'Immunity' },
+    { id: '7', name: 'Classic Maska Bun', category: 'Maska Buns', price: 35, image: '🍞', tag: 'Amul Butter' },
+    { id: '8', name: 'Bun Maska Jam', category: 'Maska Buns', price: 45, image: '🍞', tag: 'Sweet & Salty' },
+    { id: '9', name: 'Cheese Bun Maska', category: 'Maska Buns', price: 55, image: '🧀', tag: 'Grilled' },
+    { id: '10', name: 'Crispy Aloo Samosa (2 pcs)', category: 'Hot Snacks', price: 40, image: '🥟', tag: 'Served Hot' },
+    { id: '11', name: 'Onion Samosa (4 pcs)', category: 'Hot Snacks', price: 35, image: '🥟', tag: 'Crispy Mini' },
+    { id: '12', name: 'Osmania Biscuits (4 pcs)', category: 'Biscuits & Bakery', price: 25, image: '🍪', tag: 'Chai Dip' },
+    { id: '13', name: 'Butter Cookies (Plate)', category: 'Biscuits & Bakery', price: 30, image: '🍪', tag: 'Fresh Baked' },
   ]);
 
   const [cart, setCart] = useState<CartItem[]>([
-    { id: '1', name: 'Paneer Tikka', price: 280, quantity: 1, isVeg: true },
-    { id: '3', name: 'Veg Biryani', price: 260, quantity: 1, isVeg: true },
-    { id: '5', name: 'Butter Naan', price: 60, quantity: 2, isVeg: true },
-    { id: '6', name: 'Chicken Curry', price: 330, quantity: 1, isVeg: false },
+    { id: '1', name: 'Irani Dum Chai', price: 20, quantity: 2, category: 'Special Chai' },
+    { id: '7', name: 'Classic Maska Bun', price: 35, quantity: 2, category: 'Maska Buns' },
+    { id: '10', name: 'Crispy Aloo Samosa (2 pcs)', price: 40, quantity: 1, category: 'Hot Snacks' },
   ]);
 
   const addToCart = (item: any) => {
@@ -59,7 +61,7 @@ export const PosBilling: React.FC = () => {
       if (existing) {
         return prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
       }
-      return [...prev, { id: item.id, name: item.name, price: item.price, quantity: 1, isVeg: item.isVeg }];
+      return [...prev, { id: item.id, name: item.name, price: item.price, quantity: 1, category: item.category }];
     });
   };
 
@@ -78,9 +80,8 @@ export const PosBilling: React.FC = () => {
   };
 
   const subtotal = cart.reduce((acc, it) => acc + it.price * it.quantity, 0);
-  const gst = Math.round(subtotal * 0.05 * 100) / 100;
-  const discountAmount = Math.round((subtotal * discountPercent) / 100);
-  const total = Math.max(0, subtotal + gst - discountAmount);
+  const gst = Math.round(subtotal * 0.05 * 100) / 100; // 5% GST on Cafeteria snacks
+  const total = subtotal + gst;
 
   const handleCheckout = () => {
     if (!cart.length) return;
@@ -88,7 +89,7 @@ export const PosBilling: React.FC = () => {
     setTimeout(() => {
       setIsSuccess(false);
       setCart([]);
-    }, 2200);
+    }, 2000);
   };
 
   const filteredItems = menuItems.filter((item) => {
@@ -98,31 +99,31 @@ export const PosBilling: React.FC = () => {
   });
 
   return (
-    <div className="flex h-full w-full bg-[#F4F6F9] overflow-hidden">
-      {/* Left/Middle: POS Catalog & Item Picker */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden border-r border-slate-200">
-        {/* Top Filter Bar */}
+    <div className="flex h-full w-full bg-[#F3F6F4] overflow-hidden">
+      {/* Left/Middle: Cafeteria Menu & Snacks Picker */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden border-r border-[#E2E8F0]">
+        {/* Top Search & Cafeteria Mode Bar */}
         <div className="p-4 bg-white border-b border-slate-200 flex items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search dishes or items..."
+              placeholder="Search Chai, Coffee, Samosa, Bun Maska..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/20 focus:border-[#FF7A00]"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#2E7D32]/20 focus:border-[#2E7D32]"
             />
           </div>
 
           {/* Service Mode Selector */}
           <div className="flex bg-slate-100 p-1 rounded-xl">
-            {(['Takeaway', 'Delivery', 'Dine In'] as const).map((mode) => (
+            {(['Takeaway', 'Dine In'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setServiceType(mode)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   serviceType === mode
-                    ? 'bg-[#0B2D5B] text-white shadow'
+                    ? 'bg-[#1C3F32] text-white shadow'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -132,7 +133,7 @@ export const PosBilling: React.FC = () => {
           </div>
         </div>
 
-        {/* Category Pills */}
+        {/* Cafeteria Category Pills */}
         <div className="flex items-center space-x-2 px-4 py-3 bg-white border-b border-slate-100 overflow-x-auto">
           {categories.map((cat) => (
             <button
@@ -140,8 +141,8 @@ export const PosBilling: React.FC = () => {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                 activeCategory === cat
-                  ? 'bg-[#6C47FF] text-white shadow-md shadow-[#6C47FF]/20'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-[#2E7D32] text-white shadow-md shadow-[#2E7D32]/20'
+                  : 'bg-emerald-50 text-[#1C3F32] hover:bg-emerald-100'
               }`}
             >
               {cat}
@@ -149,32 +150,33 @@ export const PosBilling: React.FC = () => {
           ))}
         </div>
 
-        {/* Items Grid */}
+        {/* Cafeteria Items Grid */}
         <div className="flex-1 overflow-y-auto p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
           {filteredItems.map((item) => (
             <div
               key={item.id}
               onClick={() => addToCart(item)}
-              className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md hover:border-[#FF7A00]/40 transition-all cursor-pointer flex flex-col justify-between group"
+              className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:shadow-md hover:border-[#2E7D32]/40 transition-all cursor-pointer flex flex-col justify-between group"
             >
               <div>
-                <div className="w-full h-24 bg-gradient-to-br from-amber-50 to-orange-100 rounded-xl flex items-center justify-center text-4xl mb-2.5">
+                <div className="w-full h-24 bg-gradient-to-br from-emerald-50 to-amber-50 rounded-xl flex items-center justify-center text-4xl mb-2.5">
                   {item.image}
                 </div>
                 <div className="flex items-start justify-between gap-1 mb-1">
-                  <h4 className="font-bold text-slate-900 text-sm leading-tight group-hover:text-[#FF7A00] transition-colors">
+                  <h4 className="font-extrabold text-slate-900 text-sm leading-tight group-hover:text-[#2E7D32] transition-colors">
                     {item.name}
                   </h4>
-                  <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    item.isVeg ? 'border-emerald-600' : 'border-red-600'
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${item.isVeg ? 'bg-emerald-600' : 'bg-red-600'}`} />
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-600 flex items-center justify-center shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   </span>
                 </div>
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                  {item.tag}
+                </span>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
-                <span className="font-extrabold text-slate-900 text-sm">₹{item.price}</span>
-                <span className="w-7 h-7 rounded-lg bg-orange-50 text-[#FF7A00] group-hover:bg-[#FF7A00] group-hover:text-white flex items-center justify-center transition-colors">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2.5">
+                <span className="font-extrabold text-slate-900 text-base">₹{item.price}</span>
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-[#2E7D32] group-hover:bg-[#2E7D32] group-hover:text-white flex items-center justify-center transition-colors">
                   <Plus className="w-4 h-4" />
                 </span>
               </div>
@@ -183,64 +185,58 @@ export const PosBilling: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Column: Active Cart, Customer Wallet & Billing */}
+      {/* Right Column: Cafeteria Token / Active Order & Wallet */}
       <div className="w-96 bg-white flex flex-col h-full shadow-xl shrink-0">
-        {/* Cart Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-[#1C3F32] text-white">
           <div className="flex items-center space-x-2">
-            <ShoppingBag className="w-5 h-5 text-[#6C47FF]" />
-            <h3 className="font-extrabold text-slate-900 text-base">Active Order</h3>
+            <Coffee className="w-5 h-5 text-emerald-400" />
+            <h3 className="font-extrabold text-white text-base">Counter Token Order</h3>
           </div>
-          <span className="text-xs bg-purple-100 text-[#6C47FF] font-bold px-2.5 py-0.5 rounded-full">
+          <span className="text-xs bg-emerald-500/30 text-emerald-200 font-bold px-2.5 py-0.5 rounded-full">
             {cart.reduce((a, b) => a + b.quantity, 0)} Items
           </span>
         </div>
 
-        {/* Customer Wallet Quick Attach */}
-        <div className="p-3.5 bg-slate-50 border-b border-slate-200">
+        {/* Customer Wallet Quick Attach for Advance top-up */}
+        <div className="p-3.5 bg-emerald-50/50 border-b border-emerald-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-600 flex items-center gap-1">
-              <User className="w-3.5 h-3.5" /> Customer Info &amp; Wallet
+            <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <User className="w-3.5 h-3.5 text-emerald-700" /> Regular Customer
             </span>
-            {walletBalance !== null && (
-              <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <WalletIcon className="w-3 h-3" /> Bal: ₹{walletBalance}
-              </span>
-            )}
+            <span className="text-[11px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <WalletIcon className="w-3 h-3" /> Advance: ₹{walletBalance}
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <input
               type="text"
-              placeholder="Phone (9876543210)"
+              placeholder="Customer Phone"
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
-              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-[#6C47FF]"
+              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
             />
             <input
               type="text"
-              placeholder="Name (Optional)"
+              placeholder="Name"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-[#6C47FF]"
+              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
             />
           </div>
         </div>
 
         {/* Cart Line Items */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-slate-400">
-              <ShoppingBag className="w-12 h-12 mb-2 stroke-[1.5]" />
-              <p className="text-xs font-medium">Cart is empty. Select items to bill.</p>
+              <Coffee className="w-12 h-12 mb-2 stroke-[1.5] text-slate-300" />
+              <p className="text-xs font-semibold">Select Chai &amp; snacks to bill.</p>
             </div>
           ) : (
             cart.map((item) => (
               <div key={item.id} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
                 <div className="flex-1 pr-2">
-                  <div className="flex items-center space-x-1.5">
-                    <span className={`w-2.5 h-2.5 rounded-full ${item.isVeg ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                    <span className="font-bold text-slate-800 text-xs">{item.name}</span>
-                  </div>
+                  <div className="font-bold text-slate-800 text-xs">{item.name}</div>
                   <span className="text-[11px] text-slate-500">₹{item.price} each</span>
                 </div>
 
@@ -267,40 +263,34 @@ export const PosBilling: React.FC = () => {
           )}
         </div>
 
-        {/* Bill Breakdown & Payment Selector */}
+        {/* Bill Breakdown & Multi-tender Selector */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 space-y-2.5">
-          <div className="space-y-1.5 text-xs text-slate-600">
+          <div className="space-y-1 text-xs text-slate-600">
             <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span className="font-semibold text-slate-800">₹{subtotal.toFixed(2)}</span>
+              <span>Item Subtotal</span>
+              <span className="font-bold text-slate-800">₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span>GST (5%)</span>
-              <span className="font-semibold text-slate-800">₹{gst.toFixed(2)}</span>
+              <span className="font-bold text-slate-800">₹{gst.toFixed(2)}</span>
             </div>
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-emerald-600 font-medium">
-                <span>Discount</span>
-                <span>-₹{discountAmount.toFixed(2)}</span>
-              </div>
-            )}
             <div className="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
-              <span>Total Payable</span>
-              <span className="text-[#0B2D5B]">₹{total.toFixed(2)}</span>
+              <span>Total Amount</span>
+              <span className="text-[#1C3F32]">₹{total.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Payment Method Selector */}
-          <div className="pt-2">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-              Select Payment Method
+          <div className="pt-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Payment Method
             </label>
             <div className="grid grid-cols-4 gap-1.5">
               {[
                 { id: 'UPI', icon: QrCode },
                 { id: 'Cash', icon: Banknote },
-                { id: 'Card', icon: CreditCard },
                 { id: 'Wallet', icon: WalletIcon },
+                { id: 'Card', icon: CreditCard },
               ].map((m) => {
                 const Icon = m.icon;
                 const isSelected = paymentMethod === m.id;
@@ -310,11 +300,11 @@ export const PosBilling: React.FC = () => {
                     onClick={() => setPaymentMethod(m.id as any)}
                     className={`py-2 flex flex-col items-center justify-center rounded-xl border text-xs font-bold transition-all ${
                       isSelected
-                        ? 'border-[#FF7A00] bg-orange-50 text-[#FF7A00] shadow-sm'
+                        ? 'border-[#2E7D32] bg-emerald-50 text-[#2E7D32] shadow-sm font-extrabold'
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
                     }`}
                   >
-                    <Icon className="w-4 h-4 mb-1" />
+                    <Icon className="w-4 h-4 mb-0.5" />
                     <span>{m.id}</span>
                   </button>
                 );
@@ -331,18 +321,16 @@ export const PosBilling: React.FC = () => {
                 ? 'bg-emerald-600 text-white'
                 : !cart.length
                 ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                : 'bg-[#6C47FF] hover:bg-[#5835E5] text-white shadow-[#6C47FF]/25'
+                : 'bg-[#1C3F32] hover:bg-[#142E25] text-white shadow-emerald-900/20'
             }`}
           >
             {isSuccess ? (
               <>
                 <CheckCircle2 className="w-5 h-5 animate-bounce" />
-                <span>Order Paid &amp; Invoiced!</span>
+                <span>Token Billed &amp; Printed!</span>
               </>
             ) : (
-              <>
-                <span>Complete Bill &amp; Pay (₹{total.toFixed(2)})</span>
-              </>
+              <span>Print Token &amp; Pay (₹{total.toFixed(2)})</span>
             )}
           </button>
         </div>
@@ -350,4 +338,3 @@ export const PosBilling: React.FC = () => {
     </div>
   );
 };
-
