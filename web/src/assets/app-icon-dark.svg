@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="hatGradDarkIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A00"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E3870"/>
+      <stop offset="100%" stop-color="#071E3D"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App Icon Squircle Background -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="111" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Centered Logo Mark -->
+  <g transform="translate(68, 68) scale(3.75)">
+    <!-- Chef Hat -->
+    <path d="M 22 56 C 12 50, 10 32, 24 24 C 24 10, 46 6, 50 16 C 56 6, 76 10, 76 24 C 90 32, 88 50, 78 56" 
+          fill="none" stroke="url(#hatGradDarkIcon)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Swash -->
+    <path d="M 16 75 C 32 78, 54 75, 78 56 C 58 64, 34 66, 22 64 Z" fill="url(#hatGradDarkIcon)" />
+    <!-- Letter R (White) -->
+    <path d="M 33 66 L 33 28 L 52 28 C 64 28, 64 43, 52 43 L 44 43 L 57 66 L 47 66 L 37 45 L 41 45 C 50 45, 50 35, 42 35 L 42 66 Z" fill="#FFFFFF" />
+    <!-- Fork inside R -->
+    <rect x="44.2" y="38" width="1.6" height="5" fill="#0B2D5B" rx="0.5"/>
+    <path d="M 43 38 C 43 40, 47 40, 47 38 L 47 33 L 43 33 Z" fill="#0B2D5B"/>
+    <rect x="43.9" y="30.5" width="0.7" height="4.5" fill="#FFFFFF"/>
+    <rect x="45.4" y="30.5" width="0.7" height="4.5" fill="#FFFFFF"/>
+  </g>
+</svg>
+
