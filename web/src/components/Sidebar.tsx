@@ -8,7 +8,8 @@ import {
   BarChart3, 
   Settings
 } from 'lucide-react';
-import chaiWalaLogo from '../assets/chai-wala-dark.svg';
+import chaiWalaLogo from '../assets/chai-wala-official.svg';
+import restroveLogoDark from '../assets/logo-dark.svg';
 
 interface SidebarProps {
   activeTab: string;
@@ -30,9 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   return (
     <aside className="w-64 bg-[#142E25] text-white flex flex-col justify-between h-screen select-none shrink-0 border-r border-[#1E4336]">
       <div>
-        {/* Brand Header with Exact Chai Wala Original Branding */}
-        <div className="p-3.5 border-b border-[#214B3C] bg-[#11271F] flex items-center justify-center">
-          <img src={chaiWalaLogo} alt="Chai Wala Original" className="h-12 w-auto object-contain" />
+        {/* Brand Header with Exact Chai Wala Official Logo */}
+        <div className="p-3 border-b border-[#214B3C] bg-white flex items-center justify-center rounded-br-2xl shadow-sm">
+          <img src={chaiWalaLogo} alt="Chai Wala Original" className="h-14 w-auto object-contain" />
         </div>
 
         {/* Navigation List */}
@@ -67,13 +68,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         </nav>
       </div>
 
-      {/* Outlet Details & Cafeteria Plan */}
-      <div className="p-4 m-3 bg-[#1C3E32] rounded-xl border border-[#2B5E4C]">
-        <div className="flex items-center space-x-2 text-emerald-300 mb-1">
-          <span className="text-xs font-bold uppercase tracking-wider">☕ Cafeteria Outlet</span>
+      {/* Bottom Section: Outlet Card & Powered by Restrove */}
+      <div className="p-3 space-y-2">
+        {/* Outlet Details */}
+        <div className="p-3 bg-[#1C3E32] rounded-xl border border-[#2B5E4C]">
+          <div className="flex items-center justify-between text-emerald-300 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider">☕ Cafeteria Counter</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
+          <div className="text-xs font-bold text-white">Chai Wala Original</div>
+          <div className="text-[11px] text-emerald-200/70">Main Outlet • Single-Unit</div>
         </div>
-        <div className="text-xs font-bold text-white">Chai Wala Original</div>
-        <div className="text-[11px] text-emerald-200/70">Main Branch • Fresh Chai &amp; Buns</div>
+
+        {/* "Powered by Restrove" Footer Badge */}
+        <div className="pt-2 px-1 pb-1 flex flex-col items-center justify-center border-t border-[#1C3E32]/70">
+          <span className="text-[10px] text-slate-400 font-medium tracking-wide mb-1">
+            POWERED BY
+          </span>
+          <img src={restroveLogoDark} alt="Restrove POS" className="h-6 w-auto opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
       </div>
     </aside>
   );
