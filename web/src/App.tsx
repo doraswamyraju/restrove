@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { PosBilling } from './modules/billing/PosBilling';
 import { OrdersList } from './modules/orders/OrdersList';
 import { CustomerWallet } from './modules/wallet/CustomerWallet';
-import { Bell, User, Wifi, Printer } from 'lucide-react';
+import { Bell, Printer } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
@@ -81,4 +81,3 @@ export function App() {
 }
 
 export default App;
-

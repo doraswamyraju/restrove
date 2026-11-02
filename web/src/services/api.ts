@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'https://restrove.sriddha.com:5088/api';
+export const API_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
 export async function fetchCatalog() {
   try {
@@ -54,4 +54,3 @@ export async function createOrder(orderPayload: any) {
   });
   return await res.json();
 }
-

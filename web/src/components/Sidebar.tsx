@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Receipt, 
   ClipboardList, 
@@ -7,10 +6,8 @@ import {
   Users, 
   Wallet, 
   BarChart3, 
-  Settings,
-  ChevronRight
+  Settings
 } from 'lucide-react';
-import logoFull from '../assets/logo-full.svg';
 import logoDark from '../assets/logo-dark.svg';
 
 interface SidebarProps {
@@ -83,4 +80,3 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     </aside>
   );
 };
-
