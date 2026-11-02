@@ -259,3 +259,4 @@ export const CustomerWallet: React.FC = () => {
     </div>
   );
 };
+

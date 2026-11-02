@@ -350,3 +350,4 @@ export const PosBilling: React.FC = () => {
     </div>
   );
 };
+

@@ -76,3 +76,4 @@ catalogRouter.post('/seed', (req: Request, res: Response) => {
   seedTx();
   res.json({ message: 'Catalog seeded successfully' });
 });
+

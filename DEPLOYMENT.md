@@ -111,3 +111,4 @@ git pull origin main
 cd backend && npm run build && pm2 restart restrove-backend
 cd ../web && npm run build
 ```
+
