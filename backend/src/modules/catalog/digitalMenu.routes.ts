@@ -18,3 +18,4 @@ digitalMenuRouter.get('/', (req: Request, res: Response) => {
     items
   });
 });
+

@@ -183,3 +183,4 @@ export const DigitalMenuCard: React.FC = () => {
     </div>
   );
 };
+

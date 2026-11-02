@@ -9,8 +9,7 @@ import {
   Wallet as WalletIcon, 
   CheckCircle2, 
   User,
-  Coffee,
-  Printer
+  Coffee
 } from 'lucide-react';
 import { getCategories, getMenuItems, getCustomerWallet, createOrder } from '../../services/api';
 
@@ -43,7 +42,6 @@ export const PosBilling: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [lastBilledOrder, setLastBilledOrder] = useState<any>(null);
 
-  // Load live DB categories and items
   useEffect(() => {
     loadCatalog();
   }, []);
@@ -64,7 +62,6 @@ export const PosBilling: React.FC = () => {
     }
   };
 
-  // Live lookup customer wallet balance from database
   useEffect(() => {
     if (customerPhone.trim().length >= 10) {
       getCustomerWallet(customerPhone.trim()).then((res) => {
@@ -108,7 +105,6 @@ export const PosBilling: React.FC = () => {
   const gst = Math.round(subtotal * 0.05 * 100) / 100;
   const total = subtotal + gst;
 
-  // Real Database Order Submission
   const handleCheckout = async () => {
     if (!cart.length) return;
 
@@ -148,7 +144,7 @@ export const PosBilling: React.FC = () => {
 
   return (
     <div className="flex h-full w-full bg-[#F3F6F4] overflow-hidden">
-      {/* Left/Middle: Compact POS Catalog */}
+      {/* Left/Middle: POS Catalog with Photo Backgrounds */}
       <div className="flex-1 flex flex-col h-full overflow-hidden border-r border-[#E2E8F0]">
         {/* Top Search & Cafeteria Mode Bar */}
         <div className="p-3 bg-white border-b border-slate-200 flex items-center justify-between gap-3">
@@ -207,27 +203,55 @@ export const PosBilling: React.FC = () => {
           ))}
         </div>
 
-        {/* Compact Items Grid (Reduced Size Cards) */}
+        {/* Items Grid with Photo Card Background */}
         <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
           {filteredItems.map((item) => (
             <div
               key={item.id}
               onClick={() => addToCart(item)}
-              className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs hover:shadow-md hover:border-[#2E7D32] transition-all cursor-pointer flex flex-col justify-between group h-28"
+              style={
+                item.image_url
+                  ? {
+                      backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.1) 100%), url(${item.image_url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }
+                  : undefined
+              }
+              className={`rounded-xl p-2.5 border shadow-xs hover:shadow-md hover:border-[#2E7D32] transition-all cursor-pointer flex flex-col justify-between group h-28 relative overflow-hidden ${
+                item.image_url ? 'border-black/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+              }`}
             >
-              <div className="flex items-start justify-between gap-1">
-                <span className="text-xl">{item.image_emoji || '☕'}</span>
-                <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded">
+              <div className="flex items-start justify-between gap-1 z-10">
+                {item.image_url ? (
+                  <span className="w-2" /> // spacer
+                ) : (
+                  <span className="text-xl">{item.image_emoji || '☕'}</span>
+                )}
+                <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded backdrop-blur-xs ${
+                  item.image_url ? 'bg-black/40 text-emerald-300' : 'bg-emerald-50 text-emerald-800'
+                }`}>
                   {item.tag || 'Fresh'}
                 </span>
               </div>
-              <div>
-                <h4 className="font-bold text-slate-900 text-xs leading-tight line-clamp-2 group-hover:text-[#2E7D32] transition-colors">
+
+              <div className="z-10">
+                <h4 className={`font-black text-xs leading-tight line-clamp-2 transition-colors ${
+                  item.image_url ? 'text-white drop-shadow-md' : 'text-slate-900 group-hover:text-[#2E7D32]'
+                }`}>
                   {item.name}
                 </h4>
-                <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-100">
-                  <span className="font-black text-slate-900 text-xs">₹{item.price}</span>
-                  <span className="w-5 h-5 rounded bg-emerald-50 text-[#2E7D32] group-hover:bg-[#2E7D32] group-hover:text-white flex items-center justify-center transition-colors">
+                <div className={`flex items-center justify-between mt-1 pt-1 border-t ${
+                  item.image_url ? 'border-white/20' : 'border-slate-100'
+                }`}>
+                  <span className={`font-black text-xs ${item.image_url ? 'text-white' : 'text-slate-900'}`}>
+                    ₹{item.price}
+                  </span>
+                  <span className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
+                    item.image_url 
+                      ? 'bg-white text-[#1C3F32] font-black' 
+                      : 'bg-emerald-50 text-[#2E7D32] group-hover:bg-[#2E7D32] group-hover:text-white'
+                  }`}>
                     <Plus className="w-3 h-3" />
                   </span>
                 </div>

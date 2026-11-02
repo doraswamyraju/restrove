@@ -14,6 +14,16 @@ export async function getMenuItems(categoryId?: string, search?: string) {
   return (await res.json()).items || [];
 }
 
+export async function uploadItemPhoto(file: File) {
+  const formData = new FormData();
+  formData.append('photo', file);
+  const res = await fetch(`${API_URL}/catalog/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  return await res.json();
+}
+
 export async function saveMenuItem(itemData: any) {
   const res = await fetch(`${API_URL}/catalog/items`, {
     method: 'POST',

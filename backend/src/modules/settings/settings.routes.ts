@@ -37,3 +37,4 @@ settingsRouter.post('/', (req: Request, res: Response) => {
   tx();
   res.json({ success: true, message: 'Settings saved' });
 });
+

@@ -7,10 +7,11 @@ import {
   Trash2, 
   Eye, 
   EyeOff, 
-  Check, 
-  X
+  X,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
-import { getCategories, getMenuItems, saveMenuItem, toggleItemAvailability, deleteMenuItem } from '../../services/api';
+import { getCategories, getMenuItems, saveMenuItem, toggleItemAvailability, deleteMenuItem, uploadItemPhoto } from '../../services/api';
 
 export const MenuEditor: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -22,12 +23,14 @@ export const MenuEditor: React.FC = () => {
   // Add / Edit Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     categoryId: '',
     price: '',
     tag: 'Fresh',
     imageEmoji: '☕',
+    imageUrl: '',
     description: '',
     isAvailable: 1
   });
@@ -63,6 +66,7 @@ export const MenuEditor: React.FC = () => {
       price: '',
       tag: 'Fresh',
       imageEmoji: '☕',
+      imageUrl: '',
       description: '',
       isAvailable: 1
     });
@@ -77,10 +81,30 @@ export const MenuEditor: React.FC = () => {
       price: it.price.toString(),
       tag: it.tag || 'Fresh',
       imageEmoji: it.image_emoji || '☕',
+      imageUrl: it.image_url || '',
       description: it.description || '',
       isAvailable: it.is_available
     });
     setIsModalOpen(true);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const res = await uploadItemPhoto(file);
+      if (res.success) {
+        setFormData((prev) => ({ ...prev, imageUrl: res.photoUrl }));
+      } else {
+        alert(res.error || 'Failed to upload photo');
+      }
+    } catch (err: any) {
+      alert('Upload error: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -95,6 +119,7 @@ export const MenuEditor: React.FC = () => {
         price: parseFloat(formData.price),
         tag: formData.tag,
         imageEmoji: formData.imageEmoji,
+        imageUrl: formData.imageUrl || null,
         description: formData.description,
         isAvailable: formData.isAvailable
       };
@@ -142,7 +167,7 @@ export const MenuEditor: React.FC = () => {
         <div>
           <h2 className="text-lg font-extrabold text-slate-900">Live Chai &amp; Snacks Menu Editor</h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real SQLite Database CRUD: add new items, update prices, and toggle live availability.
+            Real SQLite Database CRUD: upload product card background photos, update prices, and toggle live availability.
           </p>
         </div>
 
@@ -197,7 +222,7 @@ export const MenuEditor: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               <tr>
-                <th className="py-2.5 px-3">Item Name</th>
+                <th className="py-2.5 px-3">Item / Photo</th>
                 <th className="py-2.5 px-3">Category</th>
                 <th className="py-2.5 px-3">Price</th>
                 <th className="py-2.5 px-3">Tag</th>
@@ -209,8 +234,18 @@ export const MenuEditor: React.FC = () => {
               {filteredItems.map((it) => (
                 <tr key={it.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-2.5 px-3">
-                    <div className="flex items-center space-x-2.5">
-                      <span className="text-xl">{it.image_emoji || '☕'}</span>
+                    <div className="flex items-center space-x-3">
+                      {it.image_url ? (
+                        <img 
+                          src={it.image_url} 
+                          alt={it.name} 
+                          className="w-10 h-10 rounded-lg object-cover border border-slate-200 shadow-xs" 
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-emerald-50 text-xl flex items-center justify-center border border-emerald-100">
+                          {it.image_emoji || '☕'}
+                        </div>
+                      )}
                       <div>
                         <div className="font-extrabold text-slate-900">{it.name}</div>
                         <span className="text-[10px] text-emerald-700 font-bold">5% GST included</span>
@@ -244,7 +279,7 @@ export const MenuEditor: React.FC = () => {
                       <button
                         onClick={() => handleOpenEdit(it)}
                         className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                        title="Edit Item"
+                        title="Edit Item &amp; Photo"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
@@ -264,13 +299,13 @@ export const MenuEditor: React.FC = () => {
         </div>
       </div>
 
-      {/* Edit / Add Modal */}
+      {/* Edit / Add Modal with Photo Upload */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-base font-extrabold text-slate-900">
-                {editingId ? 'Edit Menu Item' : 'Add New Snack / Chai'}
+                {editingId ? 'Edit Menu Item & Photo' : 'Add New Snack / Chai'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
@@ -278,6 +313,41 @@ export const MenuEditor: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+              {/* Product Background Photo Uploader */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Card Background Photo (Optional)
+                </label>
+                <div className="flex items-center space-x-3">
+                  {formData.imageUrl ? (
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200">
+                      <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, imageUrl: '' })}
+                        className="absolute top-0 right-0 bg-red-600 text-white p-0.5 rounded-bl"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 hover:border-[#2E7D32] flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-[#2E7D32] transition-colors">
+                      <Upload className="w-5 h-5" />
+                      <span className="text-[9px] font-bold mt-0.5">{uploading ? '...' : 'Upload'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                  <div className="text-[11px] text-slate-500">
+                    Upload an appetizing photo. It will display as the card background in POS.
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-bold text-slate-700 block mb-1">Item Name</label>
                 <input
@@ -320,7 +390,7 @@ export const MenuEditor: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Emoji / Icon</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Fallback Emoji / Icon</label>
                   <input
                     type="text"
                     placeholder="☕ or 🍞"

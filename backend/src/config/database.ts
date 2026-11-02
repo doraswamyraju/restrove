@@ -70,6 +70,7 @@ export function initDatabase() {
       tag TEXT DEFAULT 'Fresh',
       description TEXT,
       image_emoji TEXT DEFAULT '☕',
+      image_url TEXT,
       is_available INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -121,6 +122,13 @@ export function initDatabase() {
       value TEXT NOT NULL
     );
   `);
+
+  // Ensure image_url column exists in items table
+  try {
+    db.prepare('ALTER TABLE items ADD COLUMN image_url TEXT').run();
+  } catch (e) {
+    // Column already exists
+  }
 
   // Auto seed real Chai Wala categories & items if empty
   const catCount: any = db.prepare('SELECT COUNT(*) as c FROM categories').get();
