@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { PosBilling } from './modules/billing/PosBilling';
 import { OrdersList } from './modules/orders/OrdersList';
@@ -8,10 +8,23 @@ import { InventoryView } from './modules/inventory/InventoryView';
 import { CustomersView } from './modules/customers/CustomersView';
 import { ReportsView } from './modules/reports/ReportsView';
 import { SettingsView } from './modules/settings/SettingsView';
-import { Bell, Printer, Coffee } from 'lucide-react';
+import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
+import { Bell, Printer, Coffee, QrCode } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
+  const [isDigitalMenuRoute, setIsDigitalMenuRoute] = useState(false);
+
+  useEffect(() => {
+    // Check if customer scanned digital menu QR code (hash or path)
+    if (window.location.hash === '#/digital-menu' || window.location.pathname === '/digital-menu') {
+      setIsDigitalMenuRoute(true);
+    }
+  }, []);
+
+  if (isDigitalMenuRoute) {
+    return <DigitalMenuCard />;
+  }
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC]">
@@ -33,16 +46,27 @@ export function App() {
             </div>
             <span className="flex items-center space-x-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Online • Cafeteria POS</span>
+              <span>Online • SQLite Database</span>
             </span>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            {/* Quick Digital QR Menu Link */}
+            <a
+              href="#/digital-menu"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden md:flex items-center space-x-1 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors"
+            >
+              <QrCode className="w-3.5 h-3.5" />
+              <span>Open Digital Menu Card</span>
+            </a>
+
             {/* Hardware Status Badges */}
             <div className="hidden md:flex items-center space-x-2 text-xs font-bold text-slate-600">
-              <span className="flex items-center space-x-1 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200">
+              <span className="flex items-center space-x-1 bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-200">
                 <Printer className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Token Printer (3") Ready</span>
+                <span>Thermal (3") Ready</span>
               </span>
             </div>
 

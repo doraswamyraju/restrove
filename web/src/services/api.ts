@@ -1,43 +1,57 @@
 export const API_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
-export async function fetchCatalog() {
-  try {
-    const [catRes, itemRes] = await Promise.all([
-      fetch(`${API_URL}/catalog/categories`),
-      fetch(`${API_URL}/catalog/items`)
-    ]);
-    const cats = await catRes.json();
-    const items = await itemRes.json();
-    return { categories: cats.categories || [], items: items.items || [] };
-  } catch (err) {
-    console.error('Failed to fetch catalog:', err);
-    return { categories: [], items: [] };
-  }
+// Catalog
+export async function getCategories() {
+  const res = await fetch(`${API_URL}/catalog/categories`);
+  return (await res.json()).categories || [];
 }
 
-export async function fetchOrders(status = 'All') {
-  try {
-    const res = await fetch(`${API_URL}/orders?status=${status}`);
-    const data = await res.json();
-    return data.orders || [];
-  } catch (err) {
-    console.error('Failed to fetch orders:', err);
-    return [];
-  }
+export async function getMenuItems(categoryId?: string, search?: string) {
+  let url = `${API_URL}/catalog/items?`;
+  if (categoryId && categoryId !== 'All') url += `categoryId=${categoryId}&`;
+  if (search) url += `search=${encodeURIComponent(search)}&`;
+  const res = await fetch(url);
+  return (await res.json()).items || [];
+}
+
+export async function saveMenuItem(itemData: any) {
+  const res = await fetch(`${API_URL}/catalog/items`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(itemData)
+  });
+  return await res.json();
+}
+
+export async function toggleItemAvailability(id: string, isAvailable: boolean) {
+  const res = await fetch(`${API_URL}/catalog/items/${id}/availability`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ isAvailable })
+  });
+  return await res.json();
+}
+
+export async function deleteMenuItem(id: string) {
+  const res = await fetch(`${API_URL}/catalog/items/${id}`, { method: 'DELETE' });
+  return await res.json();
+}
+
+// Customers & Wallet
+export async function getCustomers(search?: string) {
+  let url = `${API_URL}/customers`;
+  if (search) url += `?search=${encodeURIComponent(search)}`;
+  const res = await fetch(url);
+  return (await res.json()).customers || [];
 }
 
 export async function getCustomerWallet(phone: string) {
-  try {
-    const res = await fetch(`${API_URL}/wallet/customer/${phone}`);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (err) {
-    console.error('Failed to fetch wallet:', err);
-    return null;
-  }
+  const res = await fetch(`${API_URL}/wallet/customer/${phone}`);
+  if (!res.ok) return null;
+  return await res.json();
 }
 
-export async function depositWallet(phone: string, name: string, amount: number, notes = '') {
+export async function depositCustomerWallet(phone: string, name: string, amount: number, notes?: string) {
   const res = await fetch(`${API_URL}/wallet/deposit`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -46,11 +60,55 @@ export async function depositWallet(phone: string, name: string, amount: number,
   return await res.json();
 }
 
-export async function createOrder(orderPayload: any) {
+// Orders
+export async function getOrders(status?: string) {
+  let url = `${API_URL}/orders`;
+  if (status && status !== 'All Orders') url += `?status=${encodeURIComponent(status)}`;
+  const res = await fetch(url);
+  return (await res.json()).orders || [];
+}
+
+export async function createOrder(payload: any) {
   const res = await fetch(`${API_URL}/orders`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderPayload)
+    body: JSON.stringify(payload)
+  });
+  return await res.json();
+}
+
+// Inventory
+export async function getInventory() {
+  const res = await fetch(`${API_URL}/inventory`);
+  return (await res.json()).items || [];
+}
+
+export async function adjustInventory(itemId: string, adjustmentAmount: number, reason: string) {
+  const res = await fetch(`${API_URL}/inventory/adjust`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ itemId, adjustmentAmount, reason })
+  });
+  return await res.json();
+}
+
+// Reports
+export async function getReportsSummary() {
+  const res = await fetch(`${API_URL}/reports/summary`);
+  return await res.json();
+}
+
+// Settings
+export async function getSettings() {
+  const res = await fetch(`${API_URL}/settings`);
+  return (await res.json()).settings || {};
+}
+
+export async function saveSettings(settings: any) {
+  const res = await fetch(`${API_URL}/settings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ settings })
   });
   return await res.json();
 }
