@@ -40,3 +40,7 @@ Thumbs.db
 *.sqlite3
 *.db
 
+# Package locks (prevent git pull merge collisions on VPS)
+package-lock.json
+
+
