@@ -3,6 +3,11 @@ import { Sidebar } from './components/Sidebar';
 import { PosBilling } from './modules/billing/PosBilling';
 import { OrdersList } from './modules/orders/OrdersList';
 import { CustomerWallet } from './modules/wallet/CustomerWallet';
+import { MenuEditor } from './modules/catalog/MenuEditor';
+import { InventoryView } from './modules/inventory/InventoryView';
+import { CustomersView } from './modules/customers/CustomersView';
+import { ReportsView } from './modules/reports/ReportsView';
+import { SettingsView } from './modules/settings/SettingsView';
 import { Bell, Printer, Coffee } from 'lucide-react';
 
 export function App() {
@@ -64,21 +69,11 @@ export function App() {
           {activeTab === 'pos' && <PosBilling />}
           {activeTab === 'orders' && <OrdersList />}
           {activeTab === 'wallet' && <CustomerWallet />}
-          {activeTab === 'menu' && (
-            <div className="p-8 text-center text-slate-500">Chai &amp; Snacks Menu editor coming up next...</div>
-          )}
-          {activeTab === 'inventory' && (
-            <div className="p-8 text-center text-slate-500">Milk, Tea Leaves &amp; Bakery Stock Inventory coming up next...</div>
-          )}
-          {activeTab === 'customers' && (
-            <div className="p-8 text-center text-slate-500">Regular Customers directory coming up next...</div>
-          )}
-          {activeTab === 'reports' && (
-            <div className="p-8 text-center text-slate-500">Daily Chai Sales &amp; Cash Closing reports coming up next...</div>
-          )}
-          {activeTab === 'settings' && (
-            <div className="p-8 text-center text-slate-500">Cafeteria settings coming up next...</div>
-          )}
+          {activeTab === 'menu' && <MenuEditor />}
+          {activeTab === 'inventory' && <InventoryView />}
+          {activeTab === 'customers' && <CustomersView />}
+          {activeTab === 'reports' && <ReportsView />}
+          {activeTab === 'settings' && <SettingsView />}
         </main>
       </div>
     </div>
