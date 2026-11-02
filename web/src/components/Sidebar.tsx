@@ -8,7 +8,7 @@ import {
   BarChart3, 
   Settings
 } from 'lucide-react';
-import chaiWalaLogo from '../assets/chai-wala-official.svg';
+import chaiWalaLogoImg from '../assets/chai-wala-logo.jpg';
 import restroveLogoDark from '../assets/logo-dark.svg';
 
 interface SidebarProps {
@@ -31,9 +31,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   return (
     <aside className="w-64 bg-[#142E25] text-white flex flex-col justify-between h-screen select-none shrink-0 border-r border-[#1E4336]">
       <div>
-        {/* Brand Header with Exact Chai Wala Official Logo */}
-        <div className="p-3 border-b border-[#214B3C] bg-white flex items-center justify-center rounded-br-2xl shadow-sm">
-          <img src={chaiWalaLogo} alt="Chai Wala Original" className="h-14 w-auto object-contain" />
+        {/* Brand Header with Exact Uploaded Chai Wala Logo Image */}
+        <div className="p-3 bg-white border-b border-[#1E4336] flex items-center justify-center">
+          <img 
+            src={chaiWalaLogoImg} 
+            alt="Chai Wala Original" 
+            className="w-full h-auto max-h-16 object-contain"
+          />
         </div>
 
         {/* Navigation List */}
