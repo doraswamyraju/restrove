@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_green_primary">#1C3F32</color>
+    <color name="brand_green_dark">#142E25</color>
+    <color name="brand_green_light">#2E7D32</color>
+    <color name="brand_gold">#C88A35</color>
+    <color name="brand_gold_light">#FDF6E2</color>
+    <color name="surface_parchment">#FDFCF7</color>
+    <color name="surface_card">#FFFFFF</color>
+</resources>
