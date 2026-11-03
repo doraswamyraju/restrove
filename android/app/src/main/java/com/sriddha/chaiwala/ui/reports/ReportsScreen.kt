@@ -54,7 +54,7 @@ fun ReportsScreen() {
             // Date Range Chips
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("Today", "Yesterday", "Last 7 Days", "This Month").forEach { range ->
+                    items(listOf("Today", "Yesterday", "Last 7 Days", "This Month")) { range ->
                         val isSelected = selectedRange == range
                         FilterChip(
                             selected = isSelected,
