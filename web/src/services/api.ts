@@ -48,11 +48,24 @@ export async function deleteMenuItem(id: string) {
 }
 
 // Customers & Wallet
-export async function getCustomers(search?: string) {
-  let url = `${API_URL}/customers`;
-  if (search) url += `?search=${encodeURIComponent(search)}`;
-  const res = await fetch(url);
+export async function getCustomers(search?: string, filter?: string, sort?: string) {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (filter) params.append('filter', filter);
+  if (sort) params.append('sort', sort);
+
+  const res = await fetch(`${API_URL}/customers?${params.toString()}`);
   return (await res.json()).customers || [];
+}
+
+export async function getCustomerStats() {
+  const res = await fetch(`${API_URL}/customers/stats`);
+  return await res.json();
+}
+
+export async function getCustomerDetails(id: string) {
+  const res = await fetch(`${API_URL}/customers/${id}`);
+  return await res.json();
 }
 
 export async function saveCustomer(data: any) {
@@ -60,6 +73,24 @@ export async function saveCustomer(data: any) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
+  });
+  return await res.json();
+}
+
+export async function updateCustomer(id: string, data: any) {
+  const res = await fetch(`${API_URL}/customers/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return await res.json();
+}
+
+export async function adjustCustomerWallet(id: string, payload: any) {
+  const res = await fetch(`${API_URL}/customers/${id}/wallet-adjust`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
   return await res.json();
 }

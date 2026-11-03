@@ -25,11 +25,13 @@ body {
   background: #94A3B8;
 }
 
-/* Thermal Printer CSS */
+/* Thermal & Receipt Printer CSS */
 @media print {
   body {
     background: white !important;
     color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   body * {
     visibility: hidden;
@@ -41,15 +43,14 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    width: 80mm;
-    margin: 0;
-    padding: 4mm;
+    margin: 0 auto;
+    padding: 2mm 0;
     display: block !important;
     background: white !important;
     color: black !important;
   }
   @page {
-    size: 80mm auto;
+    size: auto;
     margin: 0mm;
   }
 }

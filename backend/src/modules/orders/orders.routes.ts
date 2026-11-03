@@ -4,6 +4,41 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const ordersRouter = Router();
 
+// Active SSE client connections for real-time live order broadcasts
+const sseClients: Response[] = [];
+
+// Real-time Server-Sent Events (SSE) live orders stream for cashier counter
+ordersRouter.get('/live-stream', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  // Send initial handshake
+  res.write(`data: ${JSON.stringify({ type: 'connected', time: new Date().toISOString() })}\n\n`);
+  sseClients.push(res);
+
+  // Heartbeat ping every 20 seconds to keep connection active through proxies/Nginx
+  const heartbeat = setInterval(() => {
+    res.write(': heartbeat\n\n');
+  }, 20000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    const idx = sseClients.indexOf(res);
+    if (idx !== -1) sseClients.splice(idx, 1);
+  });
+});
+
+export function broadcastNewOrder(orderData: any) {
+  const payload = `data: ${JSON.stringify({ type: 'new_order', order: orderData })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (e) {}
+  }
+}
+
 // List orders with optional filters and real-time database counts
 ordersRouter.get('/', (req: Request, res: Response) => {
   const { status, serviceType, search, limit = 100 } = req.query;
@@ -277,6 +312,10 @@ ordersRouter.post('/', (req: Request, res: Response) => {
 
   try {
     const result = tx();
+    // Broadcast live event to cashier POS counter
+    if (result && result.order) {
+      broadcastNewOrder(result.order);
+    }
     res.json({ success: true, ...result });
   } catch (err: any) {
     res.status(400).json({ error: err.message });

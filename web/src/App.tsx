@@ -9,19 +9,62 @@ import { CustomersView } from './modules/customers/CustomersView';
 import { ReportsView } from './modules/reports/ReportsView';
 import { SettingsView } from './modules/settings/SettingsView';
 import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
-import { Bell, Printer, Coffee, QrCode } from 'lucide-react';
-import { getOrders } from './services/api';
+import { Bell, Printer, Coffee, QrCode, X, ArrowRight } from 'lucide-react';
+import { getOrders, API_URL } from './services/api';
+import { playChime } from './utils/soundAlert';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
   const [isDigitalMenuRoute, setIsDigitalMenuRoute] = useState(false);
   const [ordersBadgeCount, setOrdersBadgeCount] = useState<number | undefined>(undefined);
+  const [incomingOrderAlert, setIncomingOrderAlert] = useState<any>(null);
 
   useEffect(() => {
     // Check if customer scanned digital menu QR code (hash or path)
     if (window.location.hash === '#/digital-menu' || window.location.pathname === '/digital-menu') {
       setIsDigitalMenuRoute(true);
     }
+
+    // Request native browser desktop notification permission if supported
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Real-time live order push listener (Server-Sent Events)
+  useEffect(() => {
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource(`${API_URL}/orders/live-stream`);
+      es.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'new_order' && data.order) {
+            playChime();
+            setIncomingOrderAlert(data.order);
+            setOrdersBadgeCount((prev) => (prev !== undefined ? prev + 1 : 1));
+
+            // Desktop notification banner
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification(`🔔 New Cafeteria Order: ${data.order.orderNumber}`, {
+                body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`
+              });
+            }
+
+            // Auto-hide in-app toast after 8 seconds
+            setTimeout(() => {
+              setIncomingOrderAlert((curr: any) => (curr?.id === data.order.id ? null : curr));
+            }, 8000);
+          }
+        } catch (err) {}
+      };
+    } catch (e) {
+      console.warn('SSE connection notice:', e);
+    }
+
+    return () => {
+      es?.close();
+    };
   }, []);
 
   // Fetch real order count from SQLite database
@@ -118,6 +161,47 @@ export function App() {
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'settings' && <SettingsView />}
         </main>
+
+        {/* Real-time Order Incoming Alert Floating Toast */}
+        {incomingOrderAlert && (
+          <div className="fixed bottom-6 right-6 z-50 animate-bounce duration-1000 max-w-md w-full bg-[#1C3F32] text-white p-4 rounded-2xl shadow-2xl border-2 border-emerald-400 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <span className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <Bell className="w-5 h-5 animate-spin" />
+              </span>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs uppercase tracking-wider font-bold bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded-full">
+                    🔔 New Order
+                  </span>
+                  <span className="font-extrabold text-sm">{incomingOrderAlert.orderNumber}</span>
+                </div>
+                <p className="text-xs text-emerald-100 mt-1">
+                  ₹{incomingOrderAlert.amount} • {incomingOrderAlert.serviceType || 'Dine-In'} • {incomingOrderAlert.customerName || 'Direct Customer'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => {
+                  setActiveTab('orders');
+                  setIncomingOrderAlert(null);
+                }}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-colors flex items-center space-x-1"
+              >
+                <span>View</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setIncomingOrderAlert(null)}
+                className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-emerald-700/50"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
