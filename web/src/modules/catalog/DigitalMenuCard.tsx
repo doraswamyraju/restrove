@@ -303,23 +303,17 @@ export const DigitalMenuCard: React.FC = () => {
           )}
         </div>
 
-        {/* Brand Banner */}
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Brand Banner with Authentic Rectangular Logo */}
+        <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
-            <img 
-              src={chaiWalaLogoImg} 
-              alt="Chai Wala Original" 
-              className="h-12 w-12 rounded-2xl object-cover bg-white p-0.5 border border-amber-300/30 shadow-md"
-            />
-            <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="font-serif font-black text-lg tracking-wider text-amber-100 uppercase">
-                  CHAI WALA
-                </h1>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#1C3F32] bg-amber-300 px-1.5 py-0.5 rounded">
-                  Original
-                </span>
-              </div>
+            <div className="bg-white px-3.5 py-1.5 rounded-2xl shadow-sm border border-amber-300/30 flex items-center justify-center shrink-0">
+              <img 
+                src={chaiWalaLogoImg} 
+                alt="Chai Wala Original" 
+                className="h-9 w-auto max-w-[160px] sm:max-w-[200px] object-contain"
+              />
+            </div>
+            <div className="hidden sm:block">
               <p className="text-[11px] text-emerald-200/90 font-medium italic">
                 India's Favourite • Authentic Dum Chai &amp; Fresh Buns
               </p>
