@@ -10,10 +10,12 @@ import { ReportsView } from './modules/reports/ReportsView';
 import { SettingsView } from './modules/settings/SettingsView';
 import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
 import { Bell, Printer, Coffee, QrCode } from 'lucide-react';
+import { getOrders } from './services/api';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
   const [isDigitalMenuRoute, setIsDigitalMenuRoute] = useState(false);
+  const [ordersBadgeCount, setOrdersBadgeCount] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     // Check if customer scanned digital menu QR code (hash or path)
@@ -22,14 +24,31 @@ export function App() {
     }
   }, []);
 
+  // Fetch real order count from SQLite database
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const res = await getOrders();
+        if (res && res.counts) {
+          setOrdersBadgeCount(res.counts.all);
+        } else if (res && res.orders) {
+          setOrdersBadgeCount(res.orders.length);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchCounts();
+  }, [activeTab]);
+
   if (isDigitalMenuRoute) {
     return <DigitalMenuCard />;
   }
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC]">
-      {/* Sidebar Navigation */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Sidebar Navigation with dynamic database order count */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} ordersBadge={ordersBadgeCount} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">

@@ -55,6 +55,22 @@ export async function getCustomers(search?: string) {
   return (await res.json()).customers || [];
 }
 
+export async function saveCustomer(data: any) {
+  const res = await fetch(`${API_URL}/customers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return await res.json();
+}
+
+export async function deleteCustomer(id: string) {
+  const res = await fetch(`${API_URL}/customers/${id}`, {
+    method: 'DELETE'
+  });
+  return await res.json();
+}
+
 export async function getCustomerWallet(phone: string) {
   const res = await fetch(`${API_URL}/wallet/customer/${phone}`);
   if (!res.ok) return null;
@@ -71,11 +87,19 @@ export async function depositCustomerWallet(phone: string, name: string, amount:
 }
 
 // Orders
-export async function getOrders(status?: string) {
-  let url = `${API_URL}/orders`;
-  if (status && status !== 'All Orders') url += `?status=${encodeURIComponent(status)}`;
-  const res = await fetch(url);
-  return (await res.json()).orders || [];
+export async function getOrders(status?: string, serviceType?: string, search?: string) {
+  const params = new URLSearchParams();
+  if (status && status !== 'All Orders' && status !== 'All') params.append('status', status);
+  if (serviceType && serviceType !== 'All Orders' && serviceType !== 'All') params.append('serviceType', serviceType);
+  if (search) params.append('search', search);
+
+  const res = await fetch(`${API_URL}/orders?${params.toString()}`);
+  return await res.json();
+}
+
+export async function getOrderById(id: string) {
+  const res = await fetch(`${API_URL}/orders/${id}`);
+  return await res.json();
 }
 
 export async function createOrder(payload: any) {
@@ -83,6 +107,13 @@ export async function createOrder(payload: any) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
+  });
+  return await res.json();
+}
+
+export async function deleteOrder(id: string) {
+  const res = await fetch(`${API_URL}/orders/${id}`, {
+    method: 'DELETE'
   });
   return await res.json();
 }
@@ -103,8 +134,8 @@ export async function adjustInventory(itemId: string, adjustmentAmount: number, 
 }
 
 // Reports
-export async function getReportsSummary() {
-  const res = await fetch(`${API_URL}/reports/summary`);
+export async function getReportsSummary(range = 'Today') {
+  const res = await fetch(`${API_URL}/reports/summary?range=${encodeURIComponent(range)}`);
   return await res.json();
 }
 

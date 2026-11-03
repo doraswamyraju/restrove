@@ -9,9 +9,11 @@ import {
   Wallet as WalletIcon, 
   CheckCircle2, 
   User,
-  Coffee
+  Coffee,
+  Printer
 } from 'lucide-react';
-import { getCategories, getMenuItems, getCustomerWallet, createOrder } from '../../services/api';
+import { getCategories, getMenuItems, getCustomerWallet, createOrder, getSettings } from '../../services/api';
+import { ReceiptModal } from '../../components/ReceiptModal';
 
 interface CartItem {
   id: string;
@@ -42,8 +44,14 @@ export const PosBilling: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [lastBilledOrder, setLastBilledOrder] = useState<any>(null);
 
+  // Receipt Modal
+  const [receiptOrder, setReceiptOrder] = useState<any>(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [settings, setSettings] = useState<any>({});
+
   useEffect(() => {
     loadCatalog();
+    getSettings().then((s) => s && setSettings(s));
   }, []);
 
   const loadCatalog = async () => {
@@ -122,6 +130,8 @@ export const PosBilling: React.FC = () => {
       const result = await createOrder(orderData);
       if (result.success) {
         setLastBilledOrder(result);
+        setReceiptOrder(result.order);
+        setIsReceiptOpen(true);
         setIsSuccess(true);
         setCart([]);
         if (paymentMethod === 'Wallet' && walletBalance !== null) {
@@ -415,6 +425,14 @@ export const PosBilling: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Bill Receipt Modal */}
+      <ReceiptModal
+        order={receiptOrder}
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        settings={settings}
+      />
     </div>
   );
 };
