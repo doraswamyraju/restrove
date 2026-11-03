@@ -6,9 +6,10 @@ import {
   Printer, 
   RefreshCcw, 
   Trash2,
-  AlertCircle
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
-import { getOrders, deleteOrder, getSettings } from '../../services/api';
+import { getOrders, deleteOrder, updateOrderStatus, getSettings } from '../../services/api';
 import { ReceiptModal } from '../../components/ReceiptModal';
 
 interface OrderItem {
@@ -115,6 +116,22 @@ export const OrdersList: React.FC = () => {
       await loadOrders();
     } catch (e: any) {
       alert('Failed to delete order: ' + e.message);
+    }
+  };
+
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      const res = await updateOrderStatus(orderId, newStatus);
+      if (res.success) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? { ...o, orderStatus: newStatus } : o))
+        );
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder((prev) => (prev ? { ...prev, orderStatus: newStatus } : null));
+        }
+      }
+    } catch (e: any) {
+      alert('Failed to update order status: ' + e.message);
     }
   };
 
@@ -245,10 +262,18 @@ export const OrdersList: React.FC = () => {
                           {o.paymentMethod}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4">
-                        <span className={`px-2.5 py-1 rounded-full border text-[11px] font-bold ${getStatusBadge(o.orderStatus)}`}>
-                          {o.orderStatus}
-                        </span>
+                      <td className="py-3.5 px-4" onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={o.orderStatus}
+                          onChange={(e) => handleStatusUpdate(o.id, e.target.value)}
+                          className={`px-2 py-1 rounded-full border text-[11px] font-bold cursor-pointer focus:outline-none transition-all ${getStatusBadge(o.orderStatus)}`}
+                        >
+                          <option value="In Service">In Service</option>
+                          <option value="Preparing">Preparing</option>
+                          <option value="Ready">Ready</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
                       </td>
                       <td className="py-3.5 px-4 text-slate-500">{o.time}</td>
                       <td className="py-3.5 px-4 text-center">
@@ -280,10 +305,35 @@ export const OrdersList: React.FC = () => {
               <h3 className="text-base font-extrabold text-slate-900">Order Details</h3>
               <span className="text-xs text-slate-500">{currentOrder.orderNumber}</span>
             </div>
-            <span className={`px-2.5 py-1 rounded-full border text-xs font-bold ${getStatusBadge(currentOrder.orderStatus)}`}>
-              {currentOrder.orderStatus}
-            </span>
+            <select
+              value={currentOrder.orderStatus}
+              onChange={(e) => handleStatusUpdate(currentOrder.id, e.target.value)}
+              className={`px-2.5 py-1 rounded-full border text-xs font-bold cursor-pointer focus:outline-none transition-all ${getStatusBadge(currentOrder.orderStatus)}`}
+            >
+              <option value="In Service">In Service</option>
+              <option value="Preparing">Preparing</option>
+              <option value="Ready">Ready</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
           </div>
+
+          {/* Quick Mark Completed action bar if not yet completed */}
+          {currentOrder.orderStatus !== 'Completed' && (
+            <div className="px-4 py-2.5 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
+              <span className="text-xs font-bold text-emerald-800 flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Status: {currentOrder.orderStatus}</span>
+              </span>
+              <button
+                onClick={() => handleStatusUpdate(currentOrder.id, 'Completed')}
+                className="px-3 py-1 bg-[#2E7D32] hover:bg-[#256629] text-white rounded-lg text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Mark Completed</span>
+              </button>
+            </div>
+          )}
 
           {/* Order Info Pills */}
           <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-600">

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Chai Wala POS</string>
+    <string name="title_activity_main">Chai Wala POS</string>
+    <string name="package_name">com.sriddha.chaiwala</string>
+    <string name="custom_url_scheme">com.sriddha.chaiwala</string>
+</resources>

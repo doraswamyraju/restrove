@@ -322,6 +322,24 @@ ordersRouter.post('/', (req: Request, res: Response) => {
   }
 });
 
+// Update order status (e.g. mark 'In Service' as 'Completed')
+ordersRouter.patch('/:id/status', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: 'Status is required' });
+  }
+
+  const target: any = db.prepare('SELECT id, order_number FROM orders WHERE id = ? OR order_number = ?').get(id, id);
+  if (!target) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+
+  db.prepare('UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, target.id);
+  res.json({ success: true, message: `Order ${target.order_number} marked as ${status}`, status });
+});
+
 // Delete order from dashboard
 ordersRouter.delete('/:id', (req: Request, res: Response) => {
   const { id } = req.params;

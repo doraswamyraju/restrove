@@ -1,4 +1,11 @@
-export const API_URL = (import.meta as any).env?.VITE_API_URL || '/api';
+// Detect if running inside native Android / Capacitor container or standard web
+const isNativeApp = typeof window !== 'undefined' && (
+  Boolean((window as any).Capacitor?.isNativePlatform?.()) ||
+  window.location.protocol === 'capacitor:' ||
+  (window.location.hostname === 'localhost' && !window.location.port)
+);
+
+export const API_URL = (import.meta as any).env?.VITE_API_URL || (isNativeApp ? 'https://restrove.sriddha.com/api' : '/api');
 
 // Catalog
 export async function getCategories() {
@@ -145,6 +152,15 @@ export async function createOrder(payload: any) {
 export async function deleteOrder(id: string) {
   const res = await fetch(`${API_URL}/orders/${id}`, {
     method: 'DELETE'
+  });
+  return await res.json();
+}
+
+export async function updateOrderStatus(id: string, status: string) {
+  const res = await fetch(`${API_URL}/orders/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
   });
   return await res.json();
 }
