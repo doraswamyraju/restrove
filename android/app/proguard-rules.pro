@@ -4,3 +4,4 @@
     @com.google.gson.annotations.SerializedName <fields>;
 }
 -keep class com.sriddha.chaiwala.data.model.** { *; }
+

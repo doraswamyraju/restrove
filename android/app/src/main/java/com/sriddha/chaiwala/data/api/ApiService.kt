@@ -98,3 +98,4 @@ interface ApiService {
     @POST("settings")
     suspend fun saveSettings(@Body settings: Map<String, String>): ApiResponse
 }
+
