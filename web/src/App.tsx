@@ -12,6 +12,7 @@ import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
 import { Bell, Printer, Coffee, QrCode, X, ArrowRight } from 'lucide-react';
 import { getOrders, API_URL } from './services/api';
 import { playChime } from './utils/soundAlert';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
@@ -25,10 +26,11 @@ export function App() {
       setIsDigitalMenuRoute(true);
     }
 
-    // Request native browser desktop notification permission if supported
+    // Request notification permissions (both browser and native Android)
     if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+      Notification.requestPermission().catch(() => {});
     }
+    LocalNotifications.requestPermissions().catch(() => {});
   }, []);
 
   // Real-time live order push listener (Server-Sent Events)
@@ -44,11 +46,25 @@ export function App() {
             setIncomingOrderAlert(data.order);
             setOrdersBadgeCount((prev) => (prev !== undefined ? prev + 1 : 1));
 
-            // Desktop notification banner
+            // Native Android status bar / tray notification
+            LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: `🔔 New Order: ${data.order.orderNumber}`,
+                  body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`,
+                  id: Math.floor(Math.random() * 100000),
+                  schedule: { at: new Date(Date.now() + 100) }
+                }
+              ]
+            }).catch(() => {});
+
+            // Browser desktop notification banner
             if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification(`🔔 New Cafeteria Order: ${data.order.orderNumber}`, {
-                body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`
-              });
+              try {
+                new Notification(`🔔 New Cafeteria Order: ${data.order.orderNumber}`, {
+                  body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`
+                });
+              } catch (e) {}
             }
 
             // Auto-hide in-app toast after 8 seconds
