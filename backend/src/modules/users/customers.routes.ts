@@ -57,7 +57,7 @@ customersRouter.get('/', (req: Request, res: Response) => {
 // Get single customer details with full ledger and order history
 customersRouter.get('/:id', (req: Request, res: Response) => {
   const { id } = req.params;
-  const customer: any = db.prepare('SELECT * FROM customers WHERE id = ? OR phone = ?').get(id, id);
+  const customer: any = db.prepare('SELECT * FROM customers WHERE id = ? OR phone = ? OR email = ?').get(id, id, id);
 
   if (!customer) {
     return res.status(404).json({ error: 'Customer not found' });

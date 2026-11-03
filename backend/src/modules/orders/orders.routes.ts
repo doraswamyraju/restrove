@@ -39,6 +39,15 @@ export function broadcastNewOrder(orderData: any) {
   }
 }
 
+export function broadcastOrderStatus(orderId: string, orderNumber: string, status: string) {
+  const payload = `data: ${JSON.stringify({ type: 'order_status_update', orderId, orderNumber, status })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (e) {}
+  }
+}
+
 // List orders with optional filters and real-time database counts
 ordersRouter.get('/', (req: Request, res: Response) => {
   const { status, serviceType, search, limit = 100 } = req.query;
@@ -337,6 +346,7 @@ ordersRouter.patch('/:id/status', (req: Request, res: Response) => {
   }
 
   db.prepare('UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, target.id);
+  broadcastOrderStatus(target.id, target.order_number, status);
   res.json({ success: true, message: `Order ${target.order_number} marked as ${status}`, status });
 });
 
