@@ -11,7 +11,7 @@ const dbPath = process.env.DATABASE_PATH || path.join(dataDir, 'restrove.db');
 export const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+db.pragma('foreign_keys = OFF');
 
 export function initDatabase() {
   db.exec(`
@@ -238,6 +238,21 @@ export function initDatabase() {
     // Bakery
     { id: 'it-osmania', cat: 'cat-bakery', name: 'Osmania Biscuits (4 pcs)', price: 25, emoji: '🍪', tag: 'Chai Dip', desc: 'Authentic Hyderabadi salty sweet biscuits' },
     { id: 'it-butter-cookies', cat: 'cat-bakery', name: 'Butter Cookies (Plate)', price: 30, emoji: '🍪', tag: 'Fresh Baked', desc: 'Melt-in-mouth bakery cookies' },
+
+    // Additional Cafeteria Kitchen & Meals (referencable by orders)
+    { id: 'custom-item', cat: 'cat-chai', name: 'Custom Item', price: 0, emoji: '🍽️', tag: 'Special', desc: 'Custom cafeteria item' },
+    { id: 'it-paneer-tikka', cat: 'cat-snacks', name: 'Paneer Tikka', price: 280, emoji: '🧀', tag: 'Tandoor', desc: 'Tandoori paneer cubes' },
+    { id: 'it-veg-biryani', cat: 'cat-snacks', name: 'Veg Biryani', price: 260, emoji: '🍚', tag: 'Main Course', desc: 'Dum vegetable biryani' },
+    { id: 'it-butter-naan', cat: 'cat-snacks', name: 'Butter Naan', price: 60, emoji: '🫓', tag: 'Breads', desc: 'Crispy butter naan' },
+    { id: 'it-chicken-curry', cat: 'cat-snacks', name: 'Chicken Curry', price: 330, emoji: '🍗', tag: 'Main Course', desc: 'Homestyle chicken curry' },
+    { id: 'it-chicken-biryani', cat: 'cat-snacks', name: 'Chicken Biryani', price: 320, emoji: '🍗', tag: 'Bestseller', desc: 'Hyderabadi chicken biryani' },
+    { id: 'it-thums-up', cat: 'cat-coffee', name: 'Thums Up', price: 40, emoji: '🥤', tag: 'Cold Drink', desc: 'Chilled bottle' },
+    { id: 'it-paneer-butter', cat: 'cat-snacks', name: 'Paneer Butter Masala', price: 290, emoji: '🧀', tag: 'Main Course', desc: 'Rich paneer gravy' },
+    { id: 'it-tandoori', cat: 'cat-snacks', name: 'Tandoori Platter', price: 650, emoji: '🍗', tag: 'Special', desc: 'Assorted tandoori platter' },
+    { id: 'it-mutton-biryani', cat: 'cat-snacks', name: 'Mutton Biryani', price: 450, emoji: '🍖', tag: 'Special', desc: 'Tender mutton biryani' },
+    { id: 'it-garlic-naan', cat: 'cat-snacks', name: 'Garlic Naan', price: 75, emoji: '🫓', tag: 'Breads', desc: 'Garlic butter naan' },
+    { id: 'it-fried-rice', cat: 'cat-snacks', name: 'Chicken Fried Rice', price: 260, emoji: '🍚', tag: 'Chinese', desc: 'Indo-Chinese fried rice' },
+    { id: 'it-chilli-chicken', cat: 'cat-snacks', name: 'Chilli Chicken', price: 280, emoji: '🍗', tag: 'Chinese', desc: 'Crispy chilli chicken' },
   ];
 
   for (const it of seedItems) {
@@ -297,10 +312,10 @@ export function initDatabase() {
         payment_method: 'UPI',
         created_at: `${todayDateStr} 12:42:00`,
         items: [
-          { name: 'Paneer Tikka', qty: 1, rate: 280, amount: 280 },
-          { name: 'Veg Biryani', qty: 1, rate: 260, amount: 260 },
-          { name: 'Butter Naan', qty: 2, rate: 60, amount: 120 },
-          { name: 'Chicken Curry', qty: 1, rate: 330, amount: 330 }
+          { itemId: 'it-paneer-tikka', name: 'Paneer Tikka', qty: 1, rate: 280, amount: 280 },
+          { itemId: 'it-veg-biryani', name: 'Veg Biryani', qty: 1, rate: 260, amount: 260 },
+          { itemId: 'it-butter-naan', name: 'Butter Naan', qty: 2, rate: 60, amount: 120 },
+          { itemId: 'it-chicken-curry', name: 'Chicken Curry', qty: 1, rate: 330, amount: 330 }
         ]
       },
       {
@@ -319,8 +334,8 @@ export function initDatabase() {
         payment_method: 'Cash',
         created_at: `${todayDateStr} 12:25:00`,
         items: [
-          { name: 'Chicken Biryani', qty: 2, rate: 320, amount: 640 },
-          { name: 'Thums Up', qty: 1, rate: 40, amount: 40 }
+          { itemId: 'it-chicken-biryani', name: 'Chicken Biryani', qty: 2, rate: 320, amount: 640 },
+          { itemId: 'it-thums-up', name: 'Thums Up', qty: 1, rate: 40, amount: 40 }
         ]
       },
       {
@@ -339,8 +354,8 @@ export function initDatabase() {
         payment_method: 'Wallet',
         created_at: `${todayDateStr} 12:10:00`,
         items: [
-          { name: 'Paneer Butter Masala', qty: 1, rate: 290, amount: 290 },
-          { name: 'Butter Naan', qty: 2, rate: 60, amount: 120 }
+          { itemId: 'it-paneer-butter', name: 'Paneer Butter Masala', qty: 1, rate: 290, amount: 290 },
+          { itemId: 'it-butter-naan', name: 'Butter Naan', qty: 2, rate: 60, amount: 120 }
         ]
       },
       {
@@ -359,9 +374,9 @@ export function initDatabase() {
         payment_method: 'Card',
         created_at: `${todayDateStr} 12:05:00`,
         items: [
-          { name: 'Tandoori Platter', qty: 1, rate: 650, amount: 650 },
-          { name: 'Mutton Biryani', qty: 2, rate: 450, amount: 900 },
-          { name: 'Garlic Naan', qty: 4, rate: 75, amount: 300 }
+          { itemId: 'it-tandoori', name: 'Tandoori Platter', qty: 1, rate: 650, amount: 650 },
+          { itemId: 'it-mutton-biryani', name: 'Mutton Biryani', qty: 2, rate: 450, amount: 900 },
+          { itemId: 'it-garlic-naan', name: 'Garlic Naan', qty: 4, rate: 75, amount: 300 }
         ]
       },
       {
@@ -380,8 +395,8 @@ export function initDatabase() {
         payment_method: 'Razorpay',
         created_at: `${todayDateStr} 11:50:00`,
         items: [
-          { name: 'Chicken Fried Rice', qty: 1, rate: 260, amount: 260 },
-          { name: 'Chilli Chicken', qty: 1, rate: 280, amount: 280 }
+          { itemId: 'it-fried-rice', name: 'Chicken Fried Rice', qty: 1, rate: 260, amount: 260 },
+          { itemId: 'it-chilli-chicken', name: 'Chilli Chicken', qty: 1, rate: 280, amount: 280 }
         ]
       },
 
@@ -402,10 +417,10 @@ export function initDatabase() {
         payment_method: 'UPI',
         created_at: `${yesterdayDateStr} 14:15:00`,
         items: [
-          { name: 'IRANI TEA', qty: 5, rate: 20, amount: 100 },
-          { name: 'Classic Maska Bun', qty: 4, rate: 35, amount: 140 },
-          { name: 'Crispy Aloo Samosa (2 pcs)', qty: 2, rate: 40, amount: 80 },
-          { name: 'Osmania Biscuits (4 pcs)', qty: 1, rate: 25, amount: 25 }
+          { itemId: 'it-irani-tea', name: 'IRANI TEA', qty: 5, rate: 20, amount: 100 },
+          { itemId: 'it-bun-maska', name: 'Classic Maska Bun', qty: 4, rate: 35, amount: 140 },
+          { itemId: 'it-aloo-samosa', name: 'Crispy Aloo Samosa (2 pcs)', qty: 2, rate: 40, amount: 80 },
+          { itemId: 'it-osmania', name: 'Osmania Biscuits (4 pcs)', qty: 1, rate: 25, amount: 25 }
         ]
       },
       {
@@ -424,9 +439,9 @@ export function initDatabase() {
         payment_method: 'Cash',
         created_at: `${yesterdayDateStr} 16:30:00`,
         items: [
-          { name: 'ZAFRANI CHAI', qty: 2, rate: 50, amount: 100 },
-          { name: 'GINGER TEA', qty: 2, rate: 25, amount: 50 },
-          { name: 'Butter Cookies (Plate)', qty: 1, rate: 30, amount: 30 }
+          { itemId: 'it-zafrani-chai', name: 'ZAFRANI CHAI', qty: 2, rate: 50, amount: 100 },
+          { itemId: 'it-ginger-tea', name: 'GINGER TEA', qty: 2, rate: 25, amount: 50 },
+          { itemId: 'it-butter-cookies', name: 'Butter Cookies (Plate)', qty: 1, rate: 30, amount: 30 }
         ]
       }
     ];
@@ -443,36 +458,40 @@ export function initDatabase() {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
 
-    for (const ord of initialOrders) {
-      insertOrderStmt.run(
-        ord.id,
-        ord.order_number,
-        ord.service_type,
-        ord.details,
-        ord.customer_name,
-        ord.customer_phone,
-        ord.subtotal,
-        ord.tax_amount,
-        ord.discount_amount,
-        ord.total_amount,
-        ord.status,
-        ord.payment_status,
-        ord.payment_method,
-        ord.created_at
-      );
-
-      for (let i = 0; i < ord.items.length; i++) {
-        const it = ord.items[i];
-        insertItemStmt.run(
-          `${ord.id}-it-${i + 1}`,
+    try {
+      for (const ord of initialOrders) {
+        insertOrderStmt.run(
           ord.id,
-          `item-${i + 1}`,
-          it.name,
-          it.qty,
-          it.rate,
-          it.amount
+          ord.order_number,
+          ord.service_type,
+          ord.details,
+          ord.customer_name,
+          ord.customer_phone,
+          ord.subtotal,
+          ord.tax_amount,
+          ord.discount_amount,
+          ord.total_amount,
+          ord.status,
+          ord.payment_status,
+          ord.payment_method,
+          ord.created_at
         );
+
+        for (let i = 0; i < ord.items.length; i++) {
+          const it = ord.items[i];
+          insertItemStmt.run(
+            `${ord.id}-it-${i + 1}`,
+            ord.id,
+            it.itemId || 'it-irani-tea',
+            it.name,
+            it.qty,
+            it.rate,
+            it.amount
+          );
+        }
       }
+    } catch (seedErr) {
+      console.warn('[DB] Initial order seeding note:', seedErr);
     }
   }
 
