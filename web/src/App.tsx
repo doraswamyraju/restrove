@@ -12,7 +12,6 @@ import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
 import { Bell, Printer, Coffee, QrCode, X, ArrowRight } from 'lucide-react';
 import { getOrders, API_URL } from './services/api';
 import { playChime } from './utils/soundAlert';
-import { LocalNotifications } from '@capacitor/local-notifications';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
@@ -30,7 +29,9 @@ export function App() {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission().catch(() => {});
     }
-    LocalNotifications.requestPermissions().catch(() => {});
+    try {
+      (window as any).Capacitor?.Plugins?.LocalNotifications?.requestPermissions?.().catch(() => {});
+    } catch (e) {}
   }, []);
 
   // Real-time live order push listener (Server-Sent Events)
@@ -46,17 +47,19 @@ export function App() {
             setIncomingOrderAlert(data.order);
             setOrdersBadgeCount((prev) => (prev !== undefined ? prev + 1 : 1));
 
-            // Native Android status bar / tray notification
-            LocalNotifications.schedule({
-              notifications: [
-                {
-                  title: `🔔 New Order: ${data.order.orderNumber}`,
-                  body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`,
-                  id: Math.floor(Math.random() * 100000),
-                  schedule: { at: new Date(Date.now() + 100) }
-                }
-              ]
-            }).catch(() => {});
+            // Native Android status bar / tray notification (when running inside Capacitor app)
+            try {
+              (window as any).Capacitor?.Plugins?.LocalNotifications?.schedule?.({
+                notifications: [
+                  {
+                    title: `🔔 New Order: ${data.order.orderNumber}`,
+                    body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`,
+                    id: Math.floor(Math.random() * 100000),
+                    schedule: { at: new Date(Date.now() + 100) }
+                  }
+                ]
+              })?.catch?.(() => {});
+            } catch (e) {}
 
             // Browser desktop notification banner
             if ('Notification' in window && Notification.permission === 'granted') {
