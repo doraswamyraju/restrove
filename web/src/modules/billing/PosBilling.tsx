@@ -9,9 +9,13 @@ import {
   Wallet as WalletIcon, 
   CheckCircle2, 
   User,
-  Coffee
+  Coffee,
+  Printer,
+  X,
+  UserCheck
 } from 'lucide-react';
-import { getCategories, getMenuItems, getCustomerWallet, createOrder } from '../../services/api';
+import { getCategories, getMenuItems, getCustomerWallet, createOrder, getSettings, getCustomers } from '../../services/api';
+import { ReceiptModal } from '../../components/ReceiptModal';
 
 interface CartItem {
   id: string;
@@ -35,6 +39,8 @@ export const PosBilling: React.FC = () => {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [allCustomers, setAllCustomers] = useState<any[]>([]);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
   // Cart & Payment
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -42,8 +48,15 @@ export const PosBilling: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [lastBilledOrder, setLastBilledOrder] = useState<any>(null);
 
+  // Receipt Modal
+  const [receiptOrder, setReceiptOrder] = useState<any>(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [settings, setSettings] = useState<any>({});
+
   useEffect(() => {
     loadCatalog();
+    getSettings().then((s) => s && setSettings(s));
+    getCustomers().then((c) => setAllCustomers(c || []));
   }, []);
 
   const loadCatalog = async () => {
@@ -101,9 +114,30 @@ export const PosBilling: React.FC = () => {
     );
   };
 
+  const selectCustomer = (c: any) => {
+    setCustomerPhone(c.phone);
+    setCustomerName(c.name);
+    setWalletBalance(Number(c.wallet_balance || 0));
+    setIsSuggestOpen(false);
+  };
+
+  const clearCustomer = () => {
+    setCustomerPhone('');
+    setCustomerName('');
+    setWalletBalance(null);
+    setIsSuggestOpen(false);
+  };
+
+  const showGst = settings.showGstBreakdown !== 'false';
   const subtotal = cart.reduce((acc, it) => acc + it.price * it.quantity, 0);
-  const gst = Math.round(subtotal * 0.05 * 100) / 100;
+  const gst = showGst ? Math.round(subtotal * 0.05 * 100) / 100 : 0;
   const total = subtotal + gst;
+
+  const matchingCustomers = (allCustomers || []).filter((c) => {
+    const q = (customerPhone || customerName).trim().toLowerCase();
+    if (!q) return false;
+    return c.phone.includes(q) || c.name.toLowerCase().includes(q);
+  });
 
   const handleCheckout = async () => {
     if (!cart.length) return;
@@ -122,6 +156,8 @@ export const PosBilling: React.FC = () => {
       const result = await createOrder(orderData);
       if (result.success) {
         setLastBilledOrder(result);
+        setReceiptOrder(result.order);
+        setIsReceiptOpen(true);
         setIsSuccess(true);
         setCart([]);
         if (paymentMethod === 'Wallet' && walletBalance !== null) {
@@ -204,7 +240,7 @@ export const PosBilling: React.FC = () => {
         </div>
 
         {/* Items Grid with Photo Card Background */}
-        <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
+        <div className="flex-1 overflow-y-auto p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 content-start auto-rows-max">
           {filteredItems.map((item) => (
             <div
               key={item.id}
@@ -273,35 +309,91 @@ export const PosBilling: React.FC = () => {
           </span>
         </div>
 
-        {/* Customer Wallet Quick Attach */}
-        <div className="p-3 bg-emerald-50/40 border-b border-emerald-100">
+        {/* Customer Wallet Quick Attach with Auto-Suggest */}
+        <div className="p-3 bg-emerald-50/40 border-b border-emerald-100 relative">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
-              <User className="w-3 h-3 text-emerald-700" /> Customer Phone
+              <User className="w-3 h-3 text-emerald-700" /> Customer Lookup &amp; Auto-Suggest
             </span>
-            {walletBalance !== null ? (
-              <span className="text-[11px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <WalletIcon className="w-3 h-3" /> Bal: ₹{walletBalance.toFixed(2)}
-              </span>
-            ) : (
-              <span className="text-[10px] text-slate-400">Lookup for advance</span>
-            )}
+            <div className="flex items-center space-x-2">
+              {walletBalance !== null ? (
+                <span className="text-[11px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <WalletIcon className="w-3 h-3" /> Bal: ₹{walletBalance.toFixed(2)}
+                </span>
+              ) : (
+                <span className="text-[10px] text-slate-400">Lookup for advance</span>
+              )}
+              {(customerPhone || customerName) && (
+                <button
+                  type="button"
+                  onClick={clearCustomer}
+                  className="text-[10px] text-slate-400 hover:text-red-600 flex items-center gap-0.5"
+                  title="Clear Customer"
+                >
+                  <X className="w-3 h-3" /> Clear
+                </button>
+              )}
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+
+          <div className="grid grid-cols-2 gap-2 relative">
             <input
               type="text"
-              placeholder="Mobile Number"
+              placeholder="Search or Phone"
               value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
+              onFocus={() => setIsSuggestOpen(true)}
+              onChange={(e) => {
+                setCustomerPhone(e.target.value);
+                setIsSuggestOpen(true);
+              }}
               className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
             />
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Customer Name"
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
+              onFocus={() => setIsSuggestOpen(true)}
+              onChange={(e) => {
+                setCustomerName(e.target.value);
+                setIsSuggestOpen(true);
+              }}
               className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
             />
+
+            {/* Auto-Suggest Dropdown */}
+            {isSuggestOpen && matchingCustomers.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 max-h-52 overflow-y-auto divide-y divide-slate-100">
+                <div className="px-3 py-1.5 text-[10px] font-black text-slate-400 uppercase bg-slate-50 flex justify-between items-center">
+                  <span>Registered Customers ({matchingCustomers.length})</span>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsSuggestOpen(false)}
+                    className="text-slate-400 hover:text-slate-700"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+                {matchingCustomers.map((c) => (
+                  <div
+                    key={c.id}
+                    onClick={() => selectCustomer(c)}
+                    className="p-2.5 hover:bg-emerald-50 cursor-pointer flex items-center justify-between text-xs transition-colors"
+                  >
+                    <div>
+                      <div className="font-black text-slate-900">{c.name}</div>
+                      <div className="text-[10px] text-slate-500">{c.phone}</div>
+                    </div>
+                    {c.wallet_balance > 0 ? (
+                      <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <WalletIcon className="w-2.5 h-2.5" /> ₹{Number(c.wallet_balance).toFixed(2)}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400 font-bold">{c.visit_count || 0} visits</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -350,10 +442,12 @@ export const PosBilling: React.FC = () => {
               <span>Subtotal</span>
               <span className="font-bold text-slate-800">₹{subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>GST (5%)</span>
-              <span className="font-bold text-slate-800">₹{gst.toFixed(2)}</span>
-            </div>
+            {showGst && (
+              <div className="flex justify-between">
+                <span>GST (5%)</span>
+                <span className="font-bold text-slate-800">₹{gst.toFixed(2)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-base font-extrabold text-slate-900 pt-1 border-t border-slate-200">
               <span>Total Payable</span>
               <span className="text-[#1C3F32]">₹{total.toFixed(2)}</span>
@@ -415,6 +509,14 @@ export const PosBilling: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Bill Receipt Modal */}
+      <ReceiptModal
+        order={receiptOrder}
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        settings={settings}
+      />
     </div>
   );
 };

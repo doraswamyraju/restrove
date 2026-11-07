@@ -25,3 +25,32 @@ body {
   background: #94A3B8;
 }
 
+/* Thermal & Receipt Printer CSS */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #thermal-print-area, #thermal-print-area * {
+    visibility: visible;
+  }
+  #thermal-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0 auto;
+    padding: 2mm 0;
+    display: block !important;
+    background: white !important;
+    color: black !important;
+  }
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+}

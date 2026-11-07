@@ -128,6 +128,8 @@ export function initDatabase() {
   try { db.prepare('ALTER TABLE items ADD COLUMN tag TEXT DEFAULT "Fresh"').run(); } catch (e) {}
   try { db.prepare('ALTER TABLE items ADD COLUMN image_emoji TEXT DEFAULT "☕"').run(); } catch (e) {}
   try { db.prepare('ALTER TABLE inventory_items ADD COLUMN category TEXT DEFAULT "Raw Materials"').run(); } catch (e) {}
+  try { db.prepare('ALTER TABLE order_items ADD COLUMN notes TEXT').run(); } catch (e) {}
+  try { db.prepare("ALTER TABLE orders ADD COLUMN details TEXT DEFAULT 'Counter Pickup'").run(); } catch (e) {}
 
   seedFullChaiwalaMenu();
 }
@@ -152,33 +154,33 @@ function seedFullChaiwalaMenu() {
 
   const itemsData = [
     // 1. Tea
-    { cat: 'cat-tea', name: 'Chaiwla Chai', price: 20, emoji: '☕', tag: 'Special' },
-    { cat: 'cat-tea', name: 'Irani Tea', price: 20, emoji: '☕', tag: 'Bestseller' },
-    { cat: 'cat-tea', name: 'Tea', price: 15, emoji: '☕', tag: 'Regular' },
-    { cat: 'cat-tea', name: 'Elachi Tea', price: 25, emoji: '🫖', tag: 'Spiced' },
-    { cat: 'cat-tea', name: 'Ginger Tea', price: 25, emoji: '🫖', tag: 'Spiced' },
-    { cat: 'cat-tea', name: 'Lemon Tea', price: 20, emoji: '🍋', tag: 'Fresh' },
-    { cat: 'cat-tea', name: 'Green Tea', price: 25, emoji: '🍵', tag: 'Healthy' },
-    { cat: 'cat-tea', name: 'Black Tea', price: 15, emoji: '🍵', tag: 'Classic' },
-    { cat: 'cat-tea', name: 'Zafrani Chai', price: 35, emoji: '✨', tag: 'Premium' },
-    { cat: 'cat-tea', name: 'Pineapple Tea', price: 25, emoji: '🍍', tag: 'Flavored' },
-    { cat: 'cat-tea', name: 'Sugar Less Tea', price: 20, emoji: '☕', tag: 'Diet' },
-    { cat: 'cat-tea', name: 'Filter Coffee', price: 30, emoji: '☕', tag: 'South Indian' },
-    { cat: 'cat-tea', name: 'Black Coffee', price: 25, emoji: '☕', tag: 'Classic' },
-    { cat: 'cat-tea', name: 'Sugar Less Coffee', price: 30, emoji: '☕', tag: 'Diet' },
-    { cat: 'cat-tea', name: 'Milk', price: 25, emoji: '🥛', tag: 'Fresh' },
-    { cat: 'cat-tea', name: 'Badam Milk', price: 40, emoji: '🥛', tag: 'Rich' },
-    { cat: 'cat-tea', name: 'Turmeric Milk', price: 35, emoji: '🥛', tag: 'Immunity' },
-    { cat: 'cat-tea', name: 'Biscuit Single', price: 5, emoji: '🍪', tag: 'Osmania' },
-    { cat: 'cat-tea', name: 'Biscuits - 1N', price: 25, emoji: '🍪', tag: 'Plate' },
-    { cat: 'cat-tea', name: 'Samosa', price: 20, emoji: '🥟', tag: 'Hot' },
-    { cat: 'cat-tea', name: 'Water Bottle 1lt', price: 20, emoji: '💧', tag: 'Chilled' },
-    { cat: 'cat-tea', name: '1/2 Water', price: 10, emoji: '💧', tag: '500ml' },
+    { cat: 'cat-tea', name: 'Chaiwla Chai', price: 20, emoji: '☕', tag: 'Special', desc: 'The Perfect proportion of tea, milk, sugar, herbs and spices.' },
+    { cat: 'cat-tea', name: 'Irani Tea', price: 20, emoji: '☕', tag: 'Bestseller', desc: 'Slowly brewed with authentic spiced tea decoction.' },
+    { cat: 'cat-tea', name: 'Tea', price: 15, emoji: '☕', tag: 'Regular', desc: 'Classic piping hot milk tea.' },
+    { cat: 'cat-tea', name: 'Elachi Tea', price: 25, emoji: '🫖', tag: 'Fragrant', desc: 'A perfect blend of milk & fresh cardamom.' },
+    { cat: 'cat-tea', name: 'Ginger Tea', price: 25, emoji: '🫖', tag: 'Immunity', desc: 'Delicious immunity booster with fresh crushed ginger.' },
+    { cat: 'cat-tea', name: 'Lemon Tea', price: 20, emoji: '🍋', tag: 'Fresh', desc: 'Tangy lemon and honey black tea.' },
+    { cat: 'cat-tea', name: 'Green Tea', price: 25, emoji: '🍵', tag: 'Antioxidant', desc: 'Antioxidant-packed warm whole leaf brew.' },
+    { cat: 'cat-tea', name: 'Black Tea', price: 15, emoji: '🍵', tag: 'Classic', desc: 'Pure black tea liquor.' },
+    { cat: 'cat-tea', name: 'Zafrani Chai', price: 35, emoji: '✨', tag: 'Royal Saffron', desc: 'Brewed with pure Iranian saffron strands.' },
+    { cat: 'cat-tea', name: 'Pineapple Tea', price: 25, emoji: '🍍', tag: 'Flavored', desc: 'Tropical fruit infusion tea.' },
+    { cat: 'cat-tea', name: 'Sugar Less Tea', price: 20, emoji: '☕', tag: 'Diet', desc: 'Fresh brewed diabetic-friendly chai.' },
+    { cat: 'cat-tea', name: 'Filter Coffee', price: 30, emoji: '☕', tag: 'South Indian', desc: 'Traditional filter decoction with frothed milk.' },
+    { cat: 'cat-tea', name: 'Black Coffee', price: 25, emoji: '☕', tag: 'Classic', desc: 'Rich roasted brew without chicory.' },
+    { cat: 'cat-tea', name: 'Sugar Less Coffee', price: 30, emoji: '☕', tag: 'Diet', desc: 'Unsweetened aromatic filter brew.' },
+    { cat: 'cat-tea', name: 'Milk', price: 25, emoji: '🥛', tag: 'Fresh', desc: 'Pure hot buffalo milk.' },
+    { cat: 'cat-tea', name: 'Badam Milk', price: 40, emoji: '🥛', tag: 'Rich', desc: 'Crushed almonds and saffron flavored hot milk.' },
+    { cat: 'cat-tea', name: 'Turmeric Milk', price: 35, emoji: '🥛', tag: 'Immunity', desc: 'Haldi golden milk.' },
+    { cat: 'cat-tea', name: 'Biscuit Single', price: 5, emoji: '🍪', tag: 'Osmania', desc: 'Hyderabadi Osmania Biscuit.' },
+    { cat: 'cat-tea', name: 'Biscuits - 1N', price: 25, emoji: '🍪', tag: 'Plate', desc: 'Plate of 4 fresh bakery biscuits.' },
+    { cat: 'cat-tea', name: 'Samosa', price: 20, emoji: '🥟', tag: 'Hot', desc: 'Crispy fried potato spiced samosa.' },
+    { cat: 'cat-tea', name: 'Water Bottle 1lt', price: 20, emoji: '💧', tag: 'Chilled', desc: 'Packaged drinking water 1 Liter.' },
+    { cat: 'cat-tea', name: '1/2 Water', price: 10, emoji: '💧', tag: '500ml', desc: '500ml drinking water.' },
 
     // 2. Malai Bun
-    { cat: 'cat-malai-bun', name: 'Malai Bun', price: 40, emoji: '🍞', tag: 'Fresh Malai' },
-    { cat: 'cat-malai-bun', name: 'Parcel Malai Bun', price: 45, emoji: '🍞', tag: 'Takeaway' },
-    { cat: 'cat-malai-bun', name: 'Plain Bun', price: 20, emoji: '🍞', tag: 'Bakery' },
+    { cat: 'cat-malai-bun', name: 'Malai Bun', price: 40, emoji: '🍞', tag: 'Fresh Malai', desc: 'Soft bun smothered with thick sweet malai cream.' },
+    { cat: 'cat-malai-bun', name: 'Parcel Malai Bun', price: 45, emoji: '🍞', tag: 'Takeaway', desc: 'Packed fresh for travel.' },
+    { cat: 'cat-malai-bun', name: 'Plain Bun', price: 20, emoji: '🍞', tag: 'Bakery', desc: 'Toasted bakery bun.' },
 
     // 3. Ice Cream & Juices
     { cat: 'cat-icecream-juices', name: 'Apple Juice', price: 70, emoji: '🍎', tag: 'Fresh' },
@@ -324,14 +326,31 @@ function seedFullChaiwalaMenu() {
 
   // Upsert items
   const itemStmt = db.prepare(`
-    INSERT INTO items (id, category_id, name, price, is_veg, image_emoji, tag, is_available)
-    VALUES (?, ?, ?, ?, 1, ?, ?, 1)
-    ON CONFLICT(id) DO UPDATE SET name=excluded.name, price=excluded.price, tag=excluded.tag, image_emoji=excluded.image_emoji
+    INSERT INTO items (id, category_id, name, price, is_veg, image_emoji, tag, description, is_available)
+    VALUES (?, ?, ?, ?, 1, ?, ?, ?, 1)
+    ON CONFLICT(id) DO UPDATE SET name=excluded.name, price=excluded.price, tag=excluded.tag, image_emoji=excluded.image_emoji, description=excluded.description
   `);
 
   let idx = 1;
   for (const it of itemsData) {
     const itemId = `it-cw-${idx++}`;
-    itemStmt.run(itemId, it.cat, it.name, it.price, it.emoji, it.tag);
+    itemStmt.run(itemId, it.cat, it.name, it.price, it.emoji, it.tag, it.desc || '');
+  }
+
+  // Ensure default settings exist
+  const settingsCount: any = db.prepare('SELECT COUNT(*) as c FROM settings').get();
+  if (settingsCount.c === 0) {
+    const defaultSettings = [
+      { key: 'outletName', value: 'Chai Wala Original' },
+      { key: 'branchAddress', value: 'Shop #4, Near Clock Tower, Tirupati, AP' },
+      { key: 'fssaiNumber', value: '10123028000451' },
+      { key: 'gstNumber', value: '37AAAAA0000A1Z5' },
+      { key: 'paperWidth', value: '80mm' },
+      { key: 'footerMessage', value: 'Thank you for visiting! Have a fresh cutting chai day ☕' },
+      { key: 'autoPrintToken', value: 'true' }
+    ];
+    for (const s of defaultSettings) {
+      db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(s.key, s.value);
+    }
   }
 }

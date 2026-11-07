@@ -17,6 +17,7 @@ export const SettingsView: React.FC = () => {
   const [branchAddress, setBranchAddress] = useState('Shop #4, Near Clock Tower, Tirupati, AP');
   const [fssaiNumber, setFssaiNumber] = useState('10123028000451');
   const [gstNumber, setGstNumber] = useState('37AAAAA0000A1Z5');
+  const [showGstBreakdown, setShowGstBreakdown] = useState<'true' | 'false'>('true');
   const [footerMessage, setFooterMessage] = useState('Thank you for visiting! Have a fresh cutting chai day ☕');
   const [autoPrintToken, setAutoPrintToken] = useState('true');
   const [isSaved, setIsSaved] = useState(false);
@@ -32,6 +33,7 @@ export const SettingsView: React.FC = () => {
         setBranchAddress(s.branchAddress || 'Shop #4, Near Clock Tower, Tirupati, AP');
         setFssaiNumber(s.fssaiNumber || '10123028000451');
         setGstNumber(s.gstNumber || '37AAAAA0000A1Z5');
+        setShowGstBreakdown(s.showGstBreakdown === 'false' ? 'false' : 'true');
         setPaperWidth(s.paperWidth === '58mm' ? '58mm' : '80mm');
         setFooterMessage(s.footerMessage || 'Thank you for visiting! Have a fresh cutting chai day ☕');
         setAutoPrintToken(s.autoPrintToken || 'true');
@@ -46,6 +48,7 @@ export const SettingsView: React.FC = () => {
       branchAddress,
       fssaiNumber,
       gstNumber,
+      showGstBreakdown,
       paperWidth,
       footerMessage,
       autoPrintToken
@@ -209,13 +212,47 @@ export const SettingsView: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-600 block mb-1">GSTIN</label>
+                <label className="text-xs font-bold text-slate-600 block mb-1">GSTIN Number</label>
                 <input
                   type="text"
                   value={gstNumber}
                   onChange={(e) => setGstNumber(e.target.value)}
                   className="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
                 />
+              </div>
+            </div>
+
+            {/* GST Disclosure Option */}
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <label className="text-xs font-black text-slate-800 block">
+                GST / Tax Disclosure on Bills &amp; POS
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGstBreakdown('true')}
+                  className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                    showGstBreakdown === 'true'
+                      ? 'border-[#2E7D32] bg-emerald-50 text-[#2E7D32] shadow-xs'
+                      : 'border-slate-200 bg-white text-slate-600'
+                  }`}
+                >
+                  <div className="font-black text-xs">Keep GST Breakdown</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Calculates &amp; displays 5% GST line</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGstBreakdown('false')}
+                  className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
+                    showGstBreakdown === 'false'
+                      ? 'border-[#2E7D32] bg-emerald-50 text-[#2E7D32] shadow-xs'
+                      : 'border-slate-200 bg-white text-slate-600'
+                  }`}
+                >
+                  <div className="font-black text-xs">Don't Keep GST Disclosure</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Flat pricing (Composition / No GST line)</div>
+                </button>
               </div>
             </div>
 
@@ -293,13 +330,15 @@ export const SettingsView: React.FC = () => {
                 <span>Subtotal</span>
                 <span>150.00</span>
               </div>
-              <div className="flex justify-between">
-                <span>GST (5%)</span>
-                <span>7.50</span>
-              </div>
+              {showGstBreakdown === 'true' && (
+                <div className="flex justify-between">
+                  <span>GST (5%)</span>
+                  <span>7.50</span>
+                </div>
+              )}
               <div className="flex justify-between font-extrabold text-xs pt-1 border-t border-slate-300">
                 <span>TOTAL</span>
-                <span>₹157.50</span>
+                <span>₹{showGstBreakdown === 'true' ? '157.50' : '150.00'}</span>
               </div>
               <div className="text-[9px] text-slate-500 pt-0.5">
                 Paid via: <span className="font-bold">UPI / Customer Wallet</span>
