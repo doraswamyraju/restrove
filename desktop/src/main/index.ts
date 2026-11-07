@@ -23,16 +23,21 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
-  // Silent ESC/POS thermal printing bridge
+  // Get available printers from Windows OS
+  ipcMain.handle('get-printers', async () => {
+    if (!mainWindow) return [];
+    return await mainWindow.webContents.getPrintersAsync();
+  });
+
+  // Direct Silent Printing bridge to connected thermal printer without dialog
   ipcMain.handle('print-receipt', async (event, receiptData) => {
     if (!mainWindow) return { success: false, error: 'Window not active' };
     
-    // Windows Native / ESC-POS printer silent print
     return new Promise((resolve) => {
       mainWindow?.webContents.print({
         silent: true,
         printBackground: true,
-        deviceName: receiptData.printerName || ''
+        deviceName: receiptData?.printerName || ''
       }, (success, failureReason) => {
         resolve({ success, failureReason });
       });

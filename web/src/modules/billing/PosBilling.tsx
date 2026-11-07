@@ -128,10 +128,8 @@ export const PosBilling: React.FC = () => {
     setIsSuggestOpen(false);
   };
 
-  const showGst = settings.showGstBreakdown !== 'false';
   const subtotal = cart.reduce((acc, it) => acc + it.price * it.quantity, 0);
-  const gst = showGst ? Math.round(subtotal * 0.05 * 100) / 100 : 0;
-  const total = subtotal + gst;
+  const total = subtotal; // Zero GST everywhere
 
   const matchingCustomers = (allCustomers || []).filter((c) => {
     const q = (customerPhone || customerName).trim().toLowerCase();
@@ -438,17 +436,7 @@ export const PosBilling: React.FC = () => {
         {/* Bill Breakdown & Pay */}
         <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-2">
           <div className="space-y-1 text-xs text-slate-600">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span className="font-bold text-slate-800">₹{subtotal.toFixed(2)}</span>
-            </div>
-            {showGst && (
-              <div className="flex justify-between">
-                <span>GST (5%)</span>
-                <span className="font-bold text-slate-800">₹{gst.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-base font-extrabold text-slate-900 pt-1 border-t border-slate-200">
+            <div className="flex justify-between text-base font-extrabold text-slate-900 pt-1">
               <span>Total Payable</span>
               <span className="text-[#1C3F32]">₹{total.toFixed(2)}</span>
             </div>

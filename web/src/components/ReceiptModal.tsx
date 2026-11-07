@@ -20,21 +20,37 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
   if (!isOpen || !order) return null;
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
+    // If running in Desktop Electron, directly print without popup dialog
+    if ((window as any).process?.versions?.electron || (window as any).require) {
+      try {
+        const electron = (window as any).require ? (window as any).require('electron') : null;
+        if (electron?.ipcRenderer) {
+          const res = await electron.ipcRenderer.invoke('print-receipt', {
+            printerName: settings.printerName || ''
+          });
+          if (res?.success) {
+            onClose();
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Silent IPC print fallback:', e);
+      }
+    }
+    // Browser fallback
     window.print();
   };
 
   const outletName = settings.outletName || 'CHAI WALA ORIGINAL';
   const branchAddress = settings.branchAddress || 'Shop #4, Near Clock Tower, Tirupati, AP';
-  const gstNumber = settings.gstNumber || '37AAAAA0000A1Z5';
   const fssaiNumber = settings.fssaiNumber || '10123028000451';
   const footerMessage = settings.footerMessage || 'Thank you for visiting! Have a fresh cutting chai day ☕';
-  const showGst = settings.showGstBreakdown !== 'false';
+  const showGst = false; // Strictly disabled as requested
 
   const items = order.items || [];
-  const subtotal = Number(order.subtotal || order.amount * (showGst ? 0.95 : 1));
-  const taxAmount = showGst ? Number(order.taxAmount || order.amount * 0.05) : 0;
-  const totalAmount = Number(order.amount || subtotal + taxAmount);
+  const totalAmount = Number(order.amount || order.total || 0);
+  const subtotal = totalAmount;
 
   const printWidthCss = printFormat === '58mm' ? '48mm' : printFormat === 'a4' ? '180mm' : '72mm';
 
