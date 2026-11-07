@@ -1,4 +1,4 @@
-export const API_URL = (import.meta as any).env?.VITE_API_URL || '/api';
+export const API_URL = (import.meta as any).env?.VITE_API_URL || 'https://restrove.sriddha.com/api';
 
 // Catalog
 export async function getCategories() {

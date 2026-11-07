@@ -10,7 +10,6 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 700,
     title: 'Chai Wala Original - Restrove POS',
-    icon: path.join(__dirname, '../assets/app-icon-dark.svg'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
