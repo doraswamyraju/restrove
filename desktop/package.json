@@ -2,10 +2,11 @@
   "name": "restrove-desktop",
   "version": "1.0.0",
   "description": "Restrove POS & Operations Platform - Windows Desktop Application",
-  "main": "dist-electron/main.js",
+  "type": "module",
+  "main": "dist-electron/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder --win",
+    "build": "vite build && electron-packager . \"Chai Wala POS\" --platform=win32 --arch=x64 --out=release --overwrite --prune=true",
     "preview": "vite preview"
   },
   "build": {
@@ -15,18 +16,7 @@
       "output": "release"
     },
     "win": {
-      "target": [
-        "nsis",
-        "portable"
-      ],
-      "icon": "assets/app-icon-dark.svg"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Chai Wala Original POS"
+      "target": "dir"
     }
   },
   "dependencies": {
@@ -37,6 +27,7 @@
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
+    "@electron/packager": "^18.4.4",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -51,4 +42,3 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   }
 }
-
