@@ -42,9 +42,9 @@ export const PosBilling: React.FC = () => {
   const [allCustomers, setAllCustomers] = useState<any[]>([]);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
-  // Cart & Payment
+  // Cart & Payment (Default to Cash as primary)
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card' | 'Wallet'>('UPI');
+  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card' | 'Wallet'>('Cash');
   const [isSuccess, setIsSuccess] = useState(false);
   const [lastBilledOrder, setLastBilledOrder] = useState<any>(null);
 
