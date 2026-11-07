@@ -14,12 +14,13 @@ import restroveLogoDark from '../assets/logo-dark.svg';
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  ordersBadge?: number | string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, ordersBadge }) => {
   const navItems = [
     { id: 'pos', label: 'POS (Billing)', icon: Receipt },
-    { id: 'orders', label: 'Orders', icon: ClipboardList, badge: '86' },
+    { id: 'orders', label: 'Orders', icon: ClipboardList, badge: ordersBadge !== undefined ? String(ordersBadge) : undefined },
     { id: 'wallet', label: 'Customer Wallet', icon: Wallet },
     { id: 'menu', label: 'Chai & Snacks Menu', icon: Coffee },
     { id: 'inventory', label: 'Milk & Stock Inventory', icon: Package },
