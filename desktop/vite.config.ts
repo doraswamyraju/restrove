@@ -9,6 +9,16 @@ export default defineConfig({
     electron([
       {
         entry: 'src/main/index.ts',
+        vite: {
+          build: {
+            rollupOptions: {
+              output: {
+                format: 'cjs',
+                entryFileNames: 'index.cjs'
+              }
+            }
+          }
+        }
       },
     ]),
     renderer(),

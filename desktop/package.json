@@ -2,8 +2,7 @@
   "name": "restrove-desktop",
   "version": "1.0.0",
   "description": "Restrove POS & Operations Platform - Windows Desktop Application",
-  "type": "module",
-  "main": "dist-electron/index.js",
+  "main": "dist-electron/index.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build && electron-packager . \"Chai Wala POS\" --platform=win32 --arch=x64 --out=release --overwrite --prune=true",
