@@ -43,4 +43,11 @@ Thumbs.db
 # Package locks (prevent git pull merge collisions on VPS)
 package-lock.json
 
+# Desktop build artifacts and binary release folders
+desktop/dist-electron/
+desktop/release/
+desktop/release-*/
+desktop/*.zip
+
+
 
