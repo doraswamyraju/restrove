@@ -1,0 +1,22 @@
+{
+  "name": "Restrove Brand Guidelines & Colors",
+  "slogan": "Bill Smarter. Serve Faster. Grow Better.",
+  "colors": {
+    "primary": "#FF7A00",
+    "primaryDark": "#E65100",
+    "navy": "#0B2D5B",
+    "accentBlue": "#3B82F6",
+    "neutral": "#6B7280",
+    "backgroundLight": "#F8FAFC",
+    "cardLight": "#FFFFFF"
+  },
+  "assets": {
+    "logoMark": "assets/branding/logo-mark.svg",
+    "logoFull": "assets/branding/logo-full.svg",
+    "logoDark": "assets/branding/logo-dark.svg",
+    "appIconLight": "assets/branding/app-icon-light.svg",
+    "appIconDark": "assets/branding/app-icon-dark.svg",
+    "favicon": "assets/branding/favicon.svg"
+  }
+}
+

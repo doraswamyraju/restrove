@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 140" width="100%" height="100%">
+  <!-- Light background version for white header or docs -->
+  <!-- Glass Cup with Steam -->
+  <g transform="translate(196, 16)">
+    <path d="M 12 14 Q 10 7 14 0" fill="none" stroke="#2B5A42" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 21 16 Q 19 8 23 1" fill="none" stroke="#2B5A42" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 30 14 Q 28 7 32 0" fill="none" stroke="#2B5A42" stroke-width="2.5" stroke-linecap="round"/>
+
+    <path d="M 3 20 L 39 20 L 32 64 L 10 64 Z" fill="none" stroke="#1C3F32" stroke-width="3.5" stroke-linejoin="round"/>
+    <line x1="1" y1="68" x2="41" y2="68" stroke="#1C3F32" stroke-width="3" stroke-linecap="round"/>
+
+    <path d="M 7 28 L 35 28 L 30 60 L 12 60 Z" fill="#2B5A42"/>
+  </g>
+
+  <!-- "CHAI" text -->
+  <text x="32" y="66" font-family="'Montserrat', Impact, sans-serif" font-size="52" font-weight="900" fill="#1C3F32" letter-spacing="4">
+    CHAI
+  </text>
+
+  <!-- "WALA" text -->
+  <text x="264" y="66" font-family="'Montserrat', Impact, sans-serif" font-size="52" font-weight="900" fill="#1C3F32" letter-spacing="4">
+    WALA
+  </text>
+
+  <!-- Underline bar -->
+  <rect x="254" y="80" width="168" height="4" rx="2" fill="#2B5A42"/>
+
+  <!-- "ORIGINAL" Tagline -->
+  <text x="432" y="86" font-family="'Montserrat', sans-serif" font-size="16" font-weight="900" fill="#1C3F32" letter-spacing="2">
+    ORIGINAL
+  </text>
+</svg>

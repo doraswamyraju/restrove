@@ -123,78 +123,215 @@ export function initDatabase() {
     );
   `);
 
-  // Auto-migrate tables for new columns
-  try {
-    db.prepare('ALTER TABLE items ADD COLUMN image_url TEXT').run();
-  } catch (e) {}
+  // Ensure migrations for new columns
+  try { db.prepare('ALTER TABLE items ADD COLUMN image_url TEXT').run(); } catch (e) {}
+  try { db.prepare('ALTER TABLE items ADD COLUMN tag TEXT DEFAULT "Fresh"').run(); } catch (e) {}
+  try { db.prepare('ALTER TABLE items ADD COLUMN image_emoji TEXT DEFAULT "☕"').run(); } catch (e) {}
+  try { db.prepare('ALTER TABLE inventory_items ADD COLUMN category TEXT DEFAULT "Raw Materials"').run(); } catch (e) {}
 
-  try {
-    db.prepare('ALTER TABLE items ADD COLUMN tag TEXT DEFAULT "Fresh"').run();
-  } catch (e) {}
+  seedFullChaiwalaMenu();
+}
 
-  try {
-    db.prepare('ALTER TABLE items ADD COLUMN image_emoji TEXT DEFAULT "☕"').run();
-  } catch (e) {}
+function seedFullChaiwalaMenu() {
+  const categoriesData = [
+    { id: 'cat-tea', name: 'Tea', slug: 'tea', sort: 1 },
+    { id: 'cat-malai-bun', name: 'Malai Bun', slug: 'malai-bun', sort: 2 },
+    { id: 'cat-icecream-juices', name: 'Ice Cream & Juices', slug: 'icecream-juices', sort: 3 },
+    { id: 'cat-fruits-icecream', name: 'Fruits With Ice Cream', slug: 'fruits-icecream', sort: 4 },
+    { id: 'cat-shake-icecream', name: 'Shake With Ice Cream', slug: 'shake-icecream', sort: 5 },
+    { id: 'cat-icecream-scoop', name: 'Ice Cream Scoop', slug: 'icecream-scoop', sort: 6 },
+    { id: 'cat-icecream-sundae', name: 'Ice Cream Sundae', slug: 'icecream-sundae', sort: 7 },
+    { id: 'cat-mojito', name: 'Mojito', slug: 'mojito', sort: 8 },
+    { id: 'cat-falloda', name: 'Falloda', slug: 'falloda', sort: 9 },
+    { id: 'cat-lassi', name: 'Lassi', slug: 'lassi', sort: 10 },
+    { id: 'cat-sizzlers', name: 'Sizzlers', slug: 'sizzlers', sort: 11 },
+    { id: 'cat-shake', name: 'Shake', slug: 'shake', sort: 12 },
+    { id: 'cat-biryani', name: 'Biryani', slug: 'biryani', sort: 13 },
+    { id: 'cat-haleem', name: 'Haleem Wala', slug: 'haleem-wala', sort: 14 }
+  ];
 
-  try {
-    db.prepare('ALTER TABLE inventory_items ADD COLUMN category TEXT DEFAULT "Raw Materials"').run();
-  } catch (e) {}
+  const itemsData = [
+    // 1. Tea
+    { cat: 'cat-tea', name: 'Chaiwla Chai', price: 20, emoji: '☕', tag: 'Special' },
+    { cat: 'cat-tea', name: 'Irani Tea', price: 20, emoji: '☕', tag: 'Bestseller' },
+    { cat: 'cat-tea', name: 'Tea', price: 15, emoji: '☕', tag: 'Regular' },
+    { cat: 'cat-tea', name: 'Elachi Tea', price: 25, emoji: '🫖', tag: 'Spiced' },
+    { cat: 'cat-tea', name: 'Ginger Tea', price: 25, emoji: '🫖', tag: 'Spiced' },
+    { cat: 'cat-tea', name: 'Lemon Tea', price: 20, emoji: '🍋', tag: 'Fresh' },
+    { cat: 'cat-tea', name: 'Green Tea', price: 25, emoji: '🍵', tag: 'Healthy' },
+    { cat: 'cat-tea', name: 'Black Tea', price: 15, emoji: '🍵', tag: 'Classic' },
+    { cat: 'cat-tea', name: 'Zafrani Chai', price: 35, emoji: '✨', tag: 'Premium' },
+    { cat: 'cat-tea', name: 'Pineapple Tea', price: 25, emoji: '🍍', tag: 'Flavored' },
+    { cat: 'cat-tea', name: 'Sugar Less Tea', price: 20, emoji: '☕', tag: 'Diet' },
+    { cat: 'cat-tea', name: 'Filter Coffee', price: 30, emoji: '☕', tag: 'South Indian' },
+    { cat: 'cat-tea', name: 'Black Coffee', price: 25, emoji: '☕', tag: 'Classic' },
+    { cat: 'cat-tea', name: 'Sugar Less Coffee', price: 30, emoji: '☕', tag: 'Diet' },
+    { cat: 'cat-tea', name: 'Milk', price: 25, emoji: '🥛', tag: 'Fresh' },
+    { cat: 'cat-tea', name: 'Badam Milk', price: 40, emoji: '🥛', tag: 'Rich' },
+    { cat: 'cat-tea', name: 'Turmeric Milk', price: 35, emoji: '🥛', tag: 'Immunity' },
+    { cat: 'cat-tea', name: 'Biscuit Single', price: 5, emoji: '🍪', tag: 'Osmania' },
+    { cat: 'cat-tea', name: 'Biscuits - 1N', price: 25, emoji: '🍪', tag: 'Plate' },
+    { cat: 'cat-tea', name: 'Samosa', price: 20, emoji: '🥟', tag: 'Hot' },
+    { cat: 'cat-tea', name: 'Water Bottle 1lt', price: 20, emoji: '💧', tag: 'Chilled' },
+    { cat: 'cat-tea', name: '1/2 Water', price: 10, emoji: '💧', tag: '500ml' },
 
-  // Auto seed real Chai Wala categories & items if empty
-  const catCount: any = db.prepare('SELECT COUNT(*) as c FROM categories').get();
-  if (catCount.c === 0) {
-    const seedCats = [
-      { id: 'cat-chai', name: 'Special Chai', slug: 'special-chai', sort: 1 },
-      { id: 'cat-coffee', name: 'Coffee & Milk', slug: 'coffee-milk', sort: 2 },
-      { id: 'cat-buns', name: 'Maska Buns', slug: 'maska-buns', sort: 3 },
-      { id: 'cat-snacks', name: 'Hot Snacks', slug: 'hot-snacks', sort: 4 },
-      { id: 'cat-bakery', name: 'Biscuits & Bakery', slug: 'biscuits-bakery', sort: 5 },
-    ];
-    for (const c of seedCats) {
-      db.prepare('INSERT INTO categories (id, name, slug, sort_order) VALUES (?, ?, ?, ?)').run(c.id, c.name, c.slug, c.sort);
-    }
+    // 2. Malai Bun
+    { cat: 'cat-malai-bun', name: 'Malai Bun', price: 40, emoji: '🍞', tag: 'Fresh Malai' },
+    { cat: 'cat-malai-bun', name: 'Parcel Malai Bun', price: 45, emoji: '🍞', tag: 'Takeaway' },
+    { cat: 'cat-malai-bun', name: 'Plain Bun', price: 20, emoji: '🍞', tag: 'Bakery' },
 
-    const seedItems = [
-      { id: 'it-1', cat: 'cat-chai', name: 'Irani Dum Chai', price: 20, emoji: '☕', tag: 'Bestseller' },
-      { id: 'it-2', cat: 'cat-chai', name: 'Ginger Elaichi Chai', price: 25, emoji: '🫖', tag: 'Fresh Spiced' },
-      { id: 'it-3', cat: 'cat-chai', name: 'Masala Chai', price: 25, emoji: '☕', tag: 'Traditional' },
-      { id: 'it-4', cat: 'cat-coffee', name: 'Filter Coffee', price: 30, emoji: '☕', tag: 'South Indian' },
-      { id: 'it-5', cat: 'cat-coffee', name: 'Hot Badam Milk', price: 40, emoji: '🥛', tag: 'Rich & Creamy' },
-      { id: 'it-6', cat: 'cat-coffee', name: 'Turmeric Golden Milk', price: 35, emoji: '🥛', tag: 'Immunity' },
-      { id: 'it-7', cat: 'cat-buns', name: 'Classic Maska Bun', price: 35, emoji: '🍞', tag: 'Amul Butter' },
-      { id: 'it-8', cat: 'cat-buns', name: 'Bun Maska Jam', price: 45, emoji: '🍞', tag: 'Sweet & Salty' },
-      { id: 'it-9', cat: 'cat-buns', name: 'Cheese Bun Maska', price: 55, emoji: '🧀', tag: 'Grilled' },
-      { id: 'it-10', cat: 'cat-snacks', name: 'Crispy Aloo Samosa (2 pcs)', price: 40, emoji: '🥟', tag: 'Served Hot' },
-      { id: 'it-11', cat: 'cat-snacks', name: 'Onion Samosa (4 pcs)', price: 35, emoji: '🥟', tag: 'Crispy Mini' },
-      { id: 'it-12', cat: 'cat-bakery', name: 'Osmania Biscuits (4 pcs)', price: 25, emoji: '🍪', tag: 'Chai Dip' },
-      { id: 'it-13', cat: 'cat-bakery', name: 'Butter Cookies (Plate)', price: 30, emoji: '🍪', tag: 'Fresh Baked' },
-    ];
-    for (const it of seedItems) {
-      db.prepare(`
-        INSERT INTO items (id, category_id, name, price, is_veg, image_emoji, tag, is_available)
-        VALUES (?, ?, ?, ?, 1, ?, ?, 1)
-      `).run(it.id, it.cat, it.name, it.price, it.emoji, it.tag);
-    }
+    // 3. Ice Cream & Juices
+    { cat: 'cat-icecream-juices', name: 'Apple Juice', price: 70, emoji: '🍎', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Banana Juice', price: 50, emoji: '🍌', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Black Grapes', price: 70, emoji: '🍇', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Butter Fruit', price: 90, emoji: '🥑', tag: 'Avocado' },
+    { cat: 'cat-icecream-juices', name: 'Butter Milk', price: 30, emoji: '🥛', tag: 'Cooler' },
+    { cat: 'cat-icecream-juices', name: 'Chickoo', price: 60, emoji: '🥔', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Chocolate', price: 80, emoji: '🍫', tag: 'Chilled' },
+    { cat: 'cat-icecream-juices', name: 'Cool Drinks', price: 40, emoji: '🥤', tag: 'Can/Bottle' },
+    { cat: 'cat-icecream-juices', name: 'Dragon Fruit', price: 90, emoji: '🐉', tag: 'Exotic' },
+    { cat: 'cat-icecream-juices', name: 'Ginger Lime', price: 40, emoji: '🍋', tag: 'Refreshing' },
+    { cat: 'cat-icecream-juices', name: 'Jaljeera', price: 35, emoji: '🌿', tag: 'Digestive' },
+    { cat: 'cat-icecream-juices', name: 'Kiwi', price: 90, emoji: '🥝', tag: 'Exotic' },
+    { cat: 'cat-icecream-juices', name: 'Lime Juice', price: 35, emoji: '🍋', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Lime Soda', price: 45, emoji: '🥤', tag: 'Fizz' },
+    { cat: 'cat-icecream-juices', name: 'Mango', price: 70, emoji: '🥭', tag: 'Seasonal' },
+    { cat: 'cat-icecream-juices', name: 'Masala Soda', price: 45, emoji: '🥤', tag: 'Spiced' },
+    { cat: 'cat-icecream-juices', name: 'Musambi', price: 60, emoji: '🍊', tag: 'Sweet Lime' },
+    { cat: 'cat-icecream-juices', name: 'Muskmelon', price: 60, emoji: '🍈', tag: 'Hydrating' },
+    { cat: 'cat-icecream-juices', name: 'Orange Juice', price: 70, emoji: '🍊', tag: 'Vitamin C' },
+    { cat: 'cat-icecream-juices', name: 'Papaya', price: 50, emoji: '🍈', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Pineapple', price: 60, emoji: '🍍', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Pomegranate', price: 80, emoji: '🍎', tag: 'Pure' },
+    { cat: 'cat-icecream-juices', name: 'Strawberry', price: 80, emoji: '🍓', tag: 'Fresh' },
+    { cat: 'cat-icecream-juices', name: 'Vanilla Ice Cream', price: 50, emoji: '🍨', tag: 'Scoop' },
+    { cat: 'cat-icecream-juices', name: 'Water Melon Lime', price: 50, emoji: '🍉', tag: 'Cooler' },
+    { cat: 'cat-icecream-juices', name: 'Watermelon', price: 50, emoji: '🍉', tag: 'Hydrating' },
+
+    // 4. Fruits With Ice Cream
+    { cat: 'cat-fruits-icecream', name: 'Fruit Bowl Salad', price: 90, emoji: '🥗', tag: 'Mixed Fruit' },
+    { cat: 'cat-fruits-icecream', name: 'Fruit Salad With Icecream', price: 120, emoji: '🍨', tag: 'Popular' },
+    { cat: 'cat-fruits-icecream', name: 'Honey Moon Salad With Ice Cream', price: 140, emoji: '🍨', tag: 'Special' },
+    { cat: 'cat-fruits-icecream', name: 'Lychee Salad With Ice Cream', price: 130, emoji: '🍨', tag: 'Exotic' },
+    { cat: 'cat-fruits-icecream', name: 'Rainbow Salad With Ice Cream', price: 150, emoji: '🍨', tag: 'Supreme' },
+
+    // 5. Shake With Ice Cream
+    { cat: 'cat-shake-icecream', name: 'Cadburry Mud', price: 130, emoji: '🍫', tag: 'Rich' },
+    { cat: 'cat-shake-icecream', name: 'Chocolate Mud', price: 120, emoji: '🍫', tag: 'Thick' },
+    { cat: 'cat-shake-icecream', name: 'Five Star Mud', price: 130, emoji: '🍫', tag: 'Caramel' },
+    { cat: 'cat-shake-icecream', name: 'Mississippi Mud', price: 140, emoji: '🍫', tag: 'Bestseller' },
+    { cat: 'cat-shake-icecream', name: 'Nutella Mud', price: 150, emoji: '🍫', tag: 'Premium' },
+    { cat: 'cat-shake-icecream', name: 'Oreo Mud', price: 130, emoji: '🍪', tag: 'Crunchy' },
+
+    // 6. Ice Cream Sundae
+    { cat: 'cat-icecream-sundae', name: 'Butter Scotch Fudge', price: 110, emoji: '🍨', tag: 'Crunchy' },
+    { cat: 'cat-icecream-sundae', name: 'Chocolate Brownie', price: 130, emoji: '🍰', tag: 'Hot & Cold' },
+    { cat: 'cat-icecream-sundae', name: 'Chocolate Fudge', price: 110, emoji: '🍨', tag: 'Fudge' },
+    { cat: 'cat-icecream-sundae', name: 'Choconut Sundae', price: 120, emoji: '🍨', tag: 'Nutty' },
+    { cat: 'cat-icecream-sundae', name: 'Death By Chocolate', price: 160, emoji: '🍫', tag: 'Signature' },
+    { cat: 'cat-icecream-sundae', name: 'Dry Fruit Sundae', price: 140, emoji: '🍨', tag: 'Loaded' },
+    { cat: 'cat-icecream-sundae', name: 'Gad Bud', price: 130, emoji: '🍨', tag: 'Classic' },
+    { cat: 'cat-icecream-sundae', name: 'Mango Fudge', price: 110, emoji: '🥭', tag: 'Mango' },
+    { cat: 'cat-icecream-sundae', name: 'Mexican Brownie', price: 140, emoji: '🍰', tag: 'Spicy Choco' },
+    { cat: 'cat-icecream-sundae', name: 'Nutella Brownie', price: 150, emoji: '🍰', tag: 'Nutella' },
+    { cat: 'cat-icecream-sundae', name: 'Nutella Fudge', price: 130, emoji: '🍨', tag: 'Nutella' },
+    { cat: 'cat-icecream-sundae', name: 'Roasted Almond', price: 120, emoji: '🍨', tag: 'Almonds' },
+    { cat: 'cat-icecream-sundae', name: 'Vanilla Fudge', price: 90, emoji: '🍨', tag: 'Fudge' },
+
+    // 7. Mojito
+    { cat: 'cat-mojito', name: 'Apple Mojito', price: 90, emoji: '🍏', tag: 'Minty' },
+    { cat: 'cat-mojito', name: 'Blue Berry Mojito', price: 100, emoji: '🫐', tag: 'Berry' },
+    { cat: 'cat-mojito', name: 'Blue Mojito', price: 90, emoji: '🌊', tag: 'Curacao' },
+    { cat: 'cat-mojito', name: 'Mango Mojito', price: 90, emoji: '🥭', tag: 'Tropical' },
+    { cat: 'cat-mojito', name: 'Mint Leaves', price: 80, emoji: '🌿', tag: 'Virgin' },
+    { cat: 'cat-mojito', name: 'Passion Fruit Mojito', price: 110, emoji: '🍹', tag: 'Exotic' },
+    { cat: 'cat-mojito', name: 'Pineapple Mojito', price: 90, emoji: '🍍', tag: 'Tropical' },
+    { cat: 'cat-mojito', name: 'Virgin Pepper Short', price: 80, emoji: '🌶️', tag: 'Zesty' },
+    { cat: 'cat-mojito', name: 'Watermelon Mojito', price: 90, emoji: '🍉', tag: 'Cooling' },
+
+    // 8. Falloda
+    { cat: 'cat-falloda', name: 'Arabian Falooda', price: 130, emoji: '🍧', tag: 'Special' },
+    { cat: 'cat-falloda', name: 'Fruit Falooda', price: 110, emoji: '🍧', tag: 'Fresh Fruits' },
+    { cat: 'cat-falloda', name: 'Kesar Falooda', price: 120, emoji: '🍧', tag: 'Saffron' },
+    { cat: 'cat-falloda', name: 'Kulfi Falooda', price: 130, emoji: '🍧', tag: 'Desi Kulfi' },
+    { cat: 'cat-falloda', name: 'Pista Falooda', price: 120, emoji: '🍧', tag: 'Pistachio' },
+    { cat: 'cat-falloda', name: 'Plain Falooda', price: 90, emoji: '🍧', tag: 'Rose' },
+    { cat: 'cat-falloda', name: 'Rose Milk', price: 50, emoji: '🥛', tag: 'Chilled' },
+    { cat: 'cat-falloda', name: 'Royal Falooda', price: 140, emoji: '🍧', tag: 'Supreme' },
+
+    // 9. Lassi
+    { cat: 'cat-lassi', name: 'Butter Scotch Lassi', price: 70, emoji: '🥛', tag: 'Crunch' },
+    { cat: 'cat-lassi', name: 'Chocolate Lassi', price: 70, emoji: '🍫', tag: 'Choco' },
+    { cat: 'cat-lassi', name: 'Dry Fruit Lassi', price: 90, emoji: '🥜', tag: 'Loaded' },
+    { cat: 'cat-lassi', name: 'Fruit Lassi', price: 80, emoji: '🍓', tag: 'Fresh Fruit' },
+    { cat: 'cat-lassi', name: 'Lychee Lassi', price: 80, emoji: '🥛', tag: 'Exotic' },
+    { cat: 'cat-lassi', name: 'Mango Lassi', price: 70, emoji: '🥭', tag: 'King' },
+    { cat: 'cat-lassi', name: 'Saffron Lassi', price: 80, emoji: '✨', tag: 'Kesar' },
+    { cat: 'cat-lassi', name: 'Strawberry Lassi', price: 70, emoji: '🍓', tag: 'Berry' },
+    { cat: 'cat-lassi', name: 'Sweet Lassi', price: 50, emoji: '🥛', tag: 'Traditional' },
+
+    // 10. Sizzlers
+    { cat: 'cat-sizzlers', name: 'Butter Scotch Sizzler', price: 160, emoji: '🔥', tag: 'Sizzling' },
+    { cat: 'cat-sizzlers', name: 'Chocolate Sizzler', price: 160, emoji: '🔥', tag: 'Hot Choco' },
+    { cat: 'cat-sizzlers', name: 'Sizzling Brownie', price: 180, emoji: '🔥', tag: 'Bestseller' },
+
+    // 11. Shake
+    { cat: 'cat-shake', name: 'Apple Shake', price: 80, emoji: '🍎', tag: 'Thick' },
+    { cat: 'cat-shake', name: 'Apple Shake A', price: 90, emoji: '🍎', tag: 'Special' },
+    { cat: 'cat-shake', name: 'Banana Shake', price: 60, emoji: '🍌', tag: 'Energy' },
+    { cat: 'cat-shake', name: 'Black Current Shake', price: 80, emoji: '🫐', tag: 'Currant' },
+    { cat: 'cat-shake', name: 'Blue Berry Shake', price: 90, emoji: '🫐', tag: 'Berry' },
+    { cat: 'cat-shake', name: 'Butter Fruit Shake', price: 100, emoji: '🥑', tag: 'Avocado' },
+    { cat: 'cat-shake', name: 'Butter Scotch Shake', price: 80, emoji: '🥤', tag: 'Crunch' },
+    { cat: 'cat-shake', name: 'Cadbery Shake', price: 90, emoji: '🍫', tag: 'Cadbury' },
+    { cat: 'cat-shake', name: 'Chocolate Shake', price: 80, emoji: '🍫', tag: 'Classic' },
+    { cat: 'cat-shake', name: 'Dry Fruit Shake', price: 110, emoji: '🥜', tag: 'Dry Fruits' },
+    { cat: 'cat-shake', name: 'Kesar Pista Shake', price: 90, emoji: '✨', tag: 'Rich' },
+    { cat: 'cat-shake', name: 'Kit Kat Shake', price: 90, emoji: '🍫', tag: 'KitKat' },
+    { cat: 'cat-shake', name: 'Lychee & Lychee Shake', price: 90, emoji: '🥤', tag: 'Lychee' },
+    { cat: 'cat-shake', name: 'Lychee & Mango Shake', price: 90, emoji: '🥭', tag: 'Fusion' },
+    { cat: 'cat-shake', name: 'Mango Shake', price: 80, emoji: '🥭', tag: 'Mango' },
+    { cat: 'cat-shake', name: 'Mango-Banna Shake', price: 80, emoji: '🍌', tag: 'Twin' },
+    { cat: 'cat-shake', name: 'Mango-Strawberry Shake', price: 90, emoji: '🍓', tag: 'Fusion' },
+    { cat: 'cat-shake', name: 'Mixed Fruit Shake', price: 80, emoji: '🍹', tag: 'Healthy' },
+    { cat: 'cat-shake', name: 'Musk Melon Shake', price: 70, emoji: '🍈', tag: 'Melon' },
+    { cat: 'cat-shake', name: 'Nutella Shake', price: 110, emoji: '🍫', tag: 'Nutella' },
+    { cat: 'cat-shake', name: 'Oreo Shake', price: 90, emoji: '🍪', tag: 'Oreo' },
+    { cat: 'cat-shake', name: 'Papaya Shake', price: 60, emoji: '🍈', tag: 'Fresh' },
+    { cat: 'cat-shake', name: 'Peanut Butter Shake', price: 90, emoji: '🥜', tag: 'Protein' },
+    { cat: 'cat-shake', name: 'Pineapple Shake', price: 70, emoji: '🍍', tag: 'Fresh' },
+    { cat: 'cat-shake', name: 'Pista Shake', price: 80, emoji: '🥤', tag: 'Pistachio' },
+    { cat: 'cat-shake', name: 'Red Velvet Shake', price: 100, emoji: '🍰', tag: 'Velvet' },
+    { cat: 'cat-shake', name: 'Strawberry Shake', price: 80, emoji: '🍓', tag: 'Berry' },
+    { cat: 'cat-shake', name: 'Vanilla Shake', price: 70, emoji: '🍨', tag: 'Classic' },
+
+    // 12. Biryani & Haleem
+    { cat: 'cat-biryani', name: 'Hyderabadi Dum Biryani', price: 160, emoji: '🍲', tag: 'Special' },
+    { cat: 'cat-biryani', name: 'Chicken Biryani Single', price: 120, emoji: '🍗', tag: 'Single' },
+    { cat: 'cat-haleem', name: 'Special Mutton Haleem', price: 180, emoji: '🥣', tag: 'Desi Ghee' },
+    { cat: 'cat-haleem', name: 'Chicken Haleem', price: 140, emoji: '🥣', tag: 'Rich' }
+  ];
+
+  // Upsert categories
+  const catStmt = db.prepare(`
+    INSERT INTO categories (id, name, slug, sort_order, is_active)
+    VALUES (?, ?, ?, ?, 1)
+    ON CONFLICT(id) DO UPDATE SET name=excluded.name, sort_order=excluded.sort_order
+  `);
+  for (const c of categoriesData) {
+    catStmt.run(c.id, c.name, c.slug, c.sort);
   }
 
-  // Seed inventory if empty
-  const invCount: any = db.prepare('SELECT COUNT(*) as c FROM inventory_items').get();
-  if (invCount.c === 0) {
-    const rawItems = [
-      { id: 'inv-1', name: 'Fresh Buffalo Milk', category: 'Dairy', unit: 'Ltr', current_stock: 45.0, min_stock_alert: 15.0, cost_per_unit: 58.0 },
-      { id: 'inv-2', name: 'Assam Tea Dust (Chai Patti)', category: 'Raw Materials', unit: 'Kg', current_stock: 12.5, min_stock_alert: 4.0, cost_per_unit: 260.0 },
-      { id: 'inv-3', name: 'White Cane Sugar', category: 'Raw Materials', unit: 'Kg', current_stock: 25.0, min_stock_alert: 8.0, cost_per_unit: 44.0 },
-      { id: 'inv-4', name: 'Elaichi & Fresh Ginger', category: 'Spices', unit: 'Kg', current_stock: 2.8, min_stock_alert: 1.0, cost_per_unit: 220.0 },
-      { id: 'inv-5', name: 'Fresh Bun Maska Buns', category: 'Bakery', unit: 'Pcs', current_stock: 60.0, min_stock_alert: 20.0, cost_per_unit: 14.0 },
-      { id: 'inv-6', name: 'Amul Butter Block', category: 'Dairy', unit: 'Kg', current_stock: 5.5, min_stock_alert: 2.0, cost_per_unit: 480.0 },
-      { id: 'inv-7', name: 'Fresh Aloo Samosas', category: 'Hot Snacks', unit: 'Pcs', current_stock: 35.0, min_stock_alert: 15.0, cost_per_unit: 12.0 },
-      { id: 'inv-8', name: 'Osmania Biscuits (Pkt)', category: 'Bakery', unit: 'Pkt', current_stock: 28.0, min_stock_alert: 10.0, cost_per_unit: 18.0 }
-    ];
-    for (const r of rawItems) {
-      db.prepare(`
-        INSERT INTO inventory_items (id, name, category, unit, current_stock, min_stock_alert, cost_per_unit)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).run(r.id, r.name, r.category, r.unit, r.current_stock, r.min_stock_alert, r.cost_per_unit);
-    }
+  // Upsert items
+  const itemStmt = db.prepare(`
+    INSERT INTO items (id, category_id, name, price, is_veg, image_emoji, tag, is_available)
+    VALUES (?, ?, ?, ?, 1, ?, ?, 1)
+    ON CONFLICT(id) DO UPDATE SET name=excluded.name, price=excluded.price, tag=excluded.tag, image_emoji=excluded.image_emoji
+  `);
+
+  let idx = 1;
+  for (const it of itemsData) {
+    const itemId = `it-cw-${idx++}`;
+    itemStmt.run(itemId, it.cat, it.name, it.price, it.emoji, it.tag);
   }
 }
