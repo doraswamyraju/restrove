@@ -248,7 +248,6 @@ export const MenuEditor: React.FC = () => {
                       )}
                       <div>
                         <div className="font-extrabold text-slate-900">{it.name}</div>
-                        <span className="text-[10px] text-emerald-700 font-bold">5% GST included</span>
                       </div>
                     </div>
                   </td>

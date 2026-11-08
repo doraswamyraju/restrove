@@ -372,13 +372,7 @@ export const OrdersList: React.FC = () => {
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span className="font-semibold text-slate-800">
-                  ₹{(currentOrder.subtotal || currentOrder.amount * 0.95).toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>GST (5%)</span>
-                <span className="font-semibold text-slate-800">
-                  ₹{(currentOrder.taxAmount || currentOrder.amount * 0.05).toFixed(2)}
+                  ₹{(currentOrder.subtotal || currentOrder.amount).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">

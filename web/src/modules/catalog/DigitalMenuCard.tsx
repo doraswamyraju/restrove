@@ -184,8 +184,8 @@ export const DigitalMenuCard: React.FC = () => {
   };
 
   const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
-  const gstAmount = Math.round(subtotal * 0.05 * 100) / 100;
-  const totalAmount = Math.round((subtotal + gstAmount) * 100) / 100;
+  const gstAmount = 0; // Strictly zero GST
+  const totalAmount = Math.round(subtotal * 100) / 100;
   const totalItemsCount = cart.reduce((acc, i) => acc + i.qty, 0);
 
   // Dynamic UPI URL for direct payments & QR
@@ -557,7 +557,6 @@ export const DigitalMenuCard: React.FC = () => {
                         <span className="text-base font-black text-[#1C3F32]">
                           ₹{item.price.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">GST inc</span>
                       </div>
                     </div>
 
@@ -627,7 +626,7 @@ export const DigitalMenuCard: React.FC = () => {
               {totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'} in order
             </div>
             <div className="text-base font-black text-[#1C3F32]">
-              ₹{totalAmount.toFixed(2)} <span className="text-[10px] text-slate-400 font-normal">(inc GST)</span>
+              ₹{totalAmount.toFixed(2)}
             </div>
           </div>
 
@@ -727,15 +726,7 @@ export const DigitalMenuCard: React.FC = () => {
 
             {/* Bill Summary */}
             <div className="p-3 bg-slate-50 rounded-2xl space-y-1 text-xs text-slate-600">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>GST (5%)</span>
-                <span>₹{gstAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm font-black text-[#1C3F32] pt-1 border-t border-slate-200">
+              <div className="flex justify-between text-sm font-black text-[#1C3F32]">
                 <span>Total Payable</span>
                 <span>₹{totalAmount.toFixed(2)}</span>
               </div>

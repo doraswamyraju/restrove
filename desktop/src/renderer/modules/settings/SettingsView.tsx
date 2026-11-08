@@ -268,38 +268,19 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
 
-            {/* GST Disclosure Option */}
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <label className="text-xs font-black text-slate-800 block">
-                GST / Tax Disclosure on Bills &amp; POS
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowGstBreakdown('true')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                    showGstBreakdown === 'true'
-                      ? 'border-[#2E7D32] bg-emerald-50 text-[#2E7D32] shadow-xs'
-                      : 'border-slate-200 bg-white text-slate-600'
-                  }`}
-                >
-                  <div className="font-black text-xs">Keep GST Breakdown</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Calculates &amp; displays 5% GST line</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowGstBreakdown('false')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                    showGstBreakdown === 'false'
-                      ? 'border-[#2E7D32] bg-emerald-50 text-[#2E7D32] shadow-xs'
-                      : 'border-slate-200 bg-white text-slate-600'
-                  }`}
-                >
-                  <div className="font-black text-xs">Don't Keep GST Disclosure</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Flat pricing (Composition / No GST line)</div>
-                </button>
+            {/* GST Disclosure Status */}
+            <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200/70 flex items-center justify-between">
+              <div>
+                <label className="text-xs font-black text-emerald-950 block">
+                  Tax Setting: Flat Composition Pricing (Zero GST)
+                </label>
+                <div className="text-[11px] text-emerald-700 mt-0.5">
+                  GST is strictly disabled across POS, Digital Menu, Invoices and Thermal Prints.
+                </div>
               </div>
+              <span className="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-extrabold uppercase tracking-wider">
+                Active
+              </span>
             </div>
 
             <div>
@@ -327,7 +308,7 @@ export const SettingsView: React.FC = () => {
               <img src={chaiWalaLogoImg} alt="Chai Wala" className="h-8 mx-auto object-contain mb-1" />
               <div className="font-extrabold text-xs">{outletName}</div>
               <div className="text-[9px] text-slate-500">{branchAddress}</div>
-              <div className="text-[8px] text-slate-400 mt-0.5">FSSAI: {fssaiNumber} | GST: {gstNumber}</div>
+              <div className="text-[8px] text-slate-400 mt-0.5">FSSAI: {fssaiNumber}</div>
             </div>
 
             <div className="border-t border-dashed border-slate-400 my-1.5" />
@@ -376,15 +357,9 @@ export const SettingsView: React.FC = () => {
                 <span>Subtotal</span>
                 <span>150.00</span>
               </div>
-              {showGstBreakdown === 'true' && (
-                <div className="flex justify-between">
-                  <span>GST (5%)</span>
-                  <span>7.50</span>
-                </div>
-              )}
               <div className="flex justify-between font-extrabold text-xs pt-1 border-t border-slate-300">
                 <span>TOTAL</span>
-                <span>₹{showGstBreakdown === 'true' ? '157.50' : '150.00'}</span>
+                <span>₹150.00</span>
               </div>
               <div className="text-[9px] text-slate-500 pt-0.5">
                 Paid via: <span className="font-bold">UPI / Customer Wallet</span>

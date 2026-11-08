@@ -35,7 +35,7 @@ export function broadcastNewOrder(orderData: any) {
   for (const client of sseClients) {
     try {
       client.write(payload);
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -44,7 +44,7 @@ export function broadcastOrderStatus(orderId: string, orderNumber: string, statu
   for (const client of sseClients) {
     try {
       client.write(payload);
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -78,8 +78,8 @@ ordersRouter.get('/', (req: Request, res: Response) => {
   const ordersWithItems = orders.map((o: any) => {
     const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(o.id);
     const d = new Date(o.created_at);
-    const timeFormatted = isNaN(d.getTime()) 
-      ? o.created_at 
+    const timeFormatted = isNaN(d.getTime())
+      ? o.created_at
       : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return {
@@ -115,7 +115,7 @@ ordersRouter.get('/', (req: Request, res: Response) => {
   const countTakeawayRow: any = db.prepare("SELECT COUNT(*) as c FROM orders WHERE service_type = 'Takeaway'").get();
   const countDeliveryRow: any = db.prepare("SELECT COUNT(*) as c FROM orders WHERE service_type = 'Delivery'").get();
   const countOnlineRow: any = db.prepare("SELECT COUNT(*) as c FROM orders WHERE service_type = 'Online'").get();
-  
+
   const todayStr = new Date().toISOString().split('T')[0];
   const countTodayRow: any = db.prepare("SELECT COUNT(*) as c FROM orders WHERE created_at LIKE ?").get(`${todayStr}%`);
 
@@ -205,14 +205,14 @@ ordersRouter.post('/', (req: Request, res: Response) => {
       }
     }
 
-    // Calculate totals
+    // Calculate totals - strictly ZERO GST
     let subtotal = 0;
     for (const it of items) {
       subtotal += Number(it.rate) * Number(it.quantity);
     }
 
-    const taxAmount = Math.round(subtotal * 0.05 * 100) / 100; // 5% GST
-    const totalAmount = Math.max(0, subtotal + taxAmount - Number(discountAmount));
+    const taxAmount = 0; // Strict requirement: No GST charged or added
+    const totalAmount = Math.max(0, subtotal - Number(discountAmount));
 
     // Generate Order Number
     const countRow: any = db.prepare('SELECT COUNT(*) as count FROM orders').get();
