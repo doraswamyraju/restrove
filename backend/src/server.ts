@@ -12,6 +12,7 @@ import { customersRouter } from './modules/users/customers.routes';
 import { settingsRouter } from './modules/settings/settings.routes';
 import { licensesRouter } from './modules/settings/licenses.routes';
 import { digitalMenuRouter } from './modules/catalog/digitalMenu.routes';
+import { enforceSoftwareLicense } from './middleware/licenseEnforcer';
 
 dotenv.config();
 
@@ -37,6 +38,9 @@ app.get('/health', (req: Request, res: Response) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Global License & Validity Enforcer (checks expiry & manual suspension)
+app.use('/api', enforceSoftwareLicense);
 
 // Live Database API Routes
 app.use('/api/wallet', walletRouter);

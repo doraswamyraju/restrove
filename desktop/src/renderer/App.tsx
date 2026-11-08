@@ -20,6 +20,17 @@ export function App() {
   const [isAdminRoute, setIsAdminRoute] = useState(false);
   const [ordersBadgeCount, setOrdersBadgeCount] = useState<number | undefined>(undefined);
   const [incomingOrderAlert, setIncomingOrderAlert] = useState<any>(null);
+  const [licenseStatus, setLicenseStatus] = useState<any>(null);
+
+  useEffect(() => {
+    // Validate vendor software license
+    fetch(`${API_URL}/licenses/check/chaiwala-original`)
+      .then((r) => r.json())
+      .then((data) => {
+        setLicenseStatus(data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     // Check routes
@@ -119,6 +130,28 @@ export function App() {
     };
     fetchCounts();
   }, [activeTab]);
+
+  if (licenseStatus && licenseStatus.available === false) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-900 text-white p-6 select-none">
+        <div className="max-w-md w-full bg-slate-800 border border-rose-500/30 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
+          <div className="w-16 h-16 bg-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mx-auto">
+            <X className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-black text-rose-300">Software Access Suspended</h2>
+          <p className="text-sm text-slate-300 font-semibold leading-relaxed">
+            {licenseStatus.error || 'The license for this Restrove outlet has expired or was suspended by platform administration.'}
+          </p>
+          <div className="p-3 bg-slate-900/80 rounded-xl text-xs font-mono text-slate-400">
+            Outlet: Chai Wala Original • Status: {licenseStatus.status?.toUpperCase() || 'INACTIVE'}
+          </div>
+          <p className="text-xs text-slate-500">
+            Please contact Restrove Administrator to renew or reactivate this terminal.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isDigitalMenuRoute) {
     return <DigitalMenuCard />;

@@ -1,7 +1,48 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
+
+function setupAutoUpdater() {
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('update-available', (info) => {
+    mainWindow?.webContents.send('updater-message', {
+      type: 'update-available',
+      version: info.version
+    });
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    mainWindow?.webContents.send('updater-message', {
+      type: 'update-downloaded',
+      version: info.version
+    });
+
+    dialog.showMessageBox(mainWindow!, {
+      type: 'info',
+      title: 'Restrove Update Ready',
+      message: `A new version (v${info.version}) of Chai Wala POS has been downloaded. Restart now to apply?`,
+      buttons: ['Restart and Install', 'Later']
+    }).then((buttonIndex) => {
+      if (buttonIndex.response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    });
+  });
+
+  // Check for updates every 4 hours or on launch (in packaged builds)
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+      console.warn('Auto-updater notice:', err?.message);
+    });
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+    }, 4 * 60 * 60 * 1000);
+  }
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -43,6 +84,18 @@ function createWindow() {
       });
     });
   });
+  // Manual update check IPC
+  ipcMain.handle('check-for-updates', async () => {
+    if (!app.isPackaged) return { available: false, message: 'Dev environment' };
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      return { available: Boolean(result?.updateInfo), version: result?.updateInfo?.version };
+    } catch (e: any) {
+      return { available: false, error: e.message };
+    }
+  });
+
+  setupAutoUpdater();
 }
 
 app.whenReady().then(createWindow);

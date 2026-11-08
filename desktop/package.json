@@ -11,15 +11,23 @@
   "build": {
     "appId": "com.restrove.chaiwala.pos",
     "productName": "Chai Wala POS",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "doraswamyraju",
+        "repo": "restrove"
+      }
+    ],
     "directories": {
       "output": "release"
     },
     "win": {
-      "target": "dir"
+      "target": "nsis"
     }
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "electron-updater": "^6.8.11",
     "lucide-react": "^0.378.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
