@@ -183,7 +183,8 @@ ordersRouter.post('/', (req: Request, res: Response) => {
     items = [],
     discountAmount = 0,
     paymentMethod = 'Cash', // 'Cash', 'UPI', 'Card', 'Wallet'
-    status = 'Completed'
+    status = 'Completed',
+    source = 'pos' // 'pos' or 'digital_menu'
   } = req.body;
 
   if (!items.length) {
@@ -245,8 +246,8 @@ ordersRouter.post('/', (req: Request, res: Response) => {
     db.prepare(`
       INSERT INTO orders (
         id, order_number, service_type, details, customer_id, customer_name, customer_phone,
-        subtotal, tax_amount, discount_amount, total_amount, status, payment_status, payment_method
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        subtotal, tax_amount, discount_amount, total_amount, status, payment_status, payment_method, source
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       orderId,
       orderNumber,
@@ -261,7 +262,8 @@ ordersRouter.post('/', (req: Request, res: Response) => {
       totalAmount,
       status,
       'Paid',
-      paymentMethod
+      paymentMethod,
+      source
     );
 
     // Insert Order Line Items
@@ -304,6 +306,7 @@ ordersRouter.post('/', (req: Request, res: Response) => {
       paymentMethod,
       paymentStatus: 'Paid',
       orderStatus: status,
+      source,
       customerName: customer ? customer.name : customerName || 'Walk-in Guest',
       customerPhone: customer ? customer.phone : customerPhone || '',
       createdAt: new Date().toISOString(),

@@ -8,6 +8,7 @@ import { InventoryView } from './modules/inventory/InventoryView';
 import { CustomersView } from './modules/customers/CustomersView';
 import { ReportsView } from './modules/reports/ReportsView';
 import { SettingsView } from './modules/settings/SettingsView';
+import { LicenseAdminView } from './modules/settings/LicenseAdminView';
 import { DigitalMenuCard } from './modules/catalog/DigitalMenuCard';
 import { Bell, Printer, Coffee, QrCode, X, ArrowRight } from 'lucide-react';
 import { getOrders, API_URL } from './services/api';
@@ -43,37 +44,46 @@ export function App() {
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'new_order' && data.order) {
-            playChime();
-            setIncomingOrderAlert(data.order);
+            // Update orders badge counter for all orders
             setOrdersBadgeCount((prev) => (prev !== undefined ? prev + 1 : 1));
 
-            // Native Android status bar / tray notification (when running inside Capacitor app)
-            try {
-              (window as any).Capacitor?.Plugins?.LocalNotifications?.schedule?.({
-                notifications: [
-                  {
-                    title: `🔔 New Order: ${data.order.orderNumber}`,
-                    body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`,
-                    id: Math.floor(Math.random() * 100000),
-                    schedule: { at: new Date(Date.now() + 100) }
-                  }
-                ]
-              })?.catch?.(() => {});
-            } catch (e) {}
+            // Alert ONLY for orders placed via the Digital Menu Card (not internal cashier POS)
+            const isFromDigitalMenu = data.order.source === 'digital_menu' || 
+                                     data.order.details?.toLowerCase().includes('table') || 
+                                     data.order.orderStatus === 'In Service';
 
-            // Browser desktop notification banner
-            if ('Notification' in window && Notification.permission === 'granted') {
+            if (isFromDigitalMenu) {
+              playChime();
+              setIncomingOrderAlert(data.order);
+
+              // Native Android status bar / tray notification (when running inside Capacitor app)
               try {
-                new Notification(`🔔 New Cafeteria Order: ${data.order.orderNumber}`, {
-                  body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Guest'}`
-                });
+                (window as any).Capacitor?.Plugins?.LocalNotifications?.schedule?.({
+                  notifications: [
+                    {
+                      title: `📱 Digital Menu Order: ${data.order.orderNumber}`,
+                      body: `${data.order.serviceType} • ₹${data.order.amount} - ${data.order.customerName || 'Table Guest'}`,
+                      id: Math.floor(Math.random() * 100000),
+                      schedule: { at: new Date(Date.now() + 100) }
+                    }
+                  ]
+                })?.catch?.(() => {});
               } catch (e) {}
-            }
 
-            // Auto-hide in-app toast after 8 seconds
-            setTimeout(() => {
-              setIncomingOrderAlert((curr: any) => (curr?.id === data.order.id ? null : curr));
-            }, 8000);
+              // Browser desktop notification banner
+              if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                  new Notification(`📱 Digital Menu Order: ${data.order.orderNumber}`, {
+                    body: `${data.order.serviceType} (${data.order.details || 'Table Order'}) • ₹${data.order.amount}`
+                  });
+                } catch (e) {}
+              }
+
+              // Auto-hide in-app toast after 8 seconds
+              setTimeout(() => {
+                setIncomingOrderAlert((curr: any) => (curr?.id === data.order.id ? null : curr));
+              }, 8000);
+            }
           }
         } catch (err) {}
       };
@@ -179,6 +189,7 @@ export function App() {
           {activeTab === 'customers' && <CustomersView />}
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'settings' && <SettingsView />}
+          {activeTab === 'license' && <LicenseAdminView />}
         </main>
 
         {/* Real-time Order Incoming Alert Floating Toast */}

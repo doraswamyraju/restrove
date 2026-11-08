@@ -214,6 +214,7 @@ export const DigitalMenuCard: React.FC = () => {
         customerName: loggedInUser?.name || 'Table Guest',
         serviceType,
         details: orderRef,
+        source: 'digital_menu',
         items: cart.map(i => ({ itemId: i.id, name: i.name, rate: i.price, quantity: i.qty })),
         paymentMethod: paymentRail,
         status: 'In Service'

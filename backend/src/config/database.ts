@@ -121,6 +121,20 @@ export function initDatabase() {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS software_licenses (
+      id TEXT PRIMARY KEY,
+      tenant_slug TEXT UNIQUE NOT NULL,
+      outlet_name TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'active',
+      plan_name TEXT NOT NULL DEFAULT 'Standard Unit',
+      expires_at DATE NOT NULL,
+      max_terminals INTEGER DEFAULT 5,
+      allowed_modules TEXT DEFAULT 'pos,orders,wallet,menu,inventory,reports,settings,digital_menu',
+      admin_notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Ensure migrations for new columns
@@ -130,6 +144,7 @@ export function initDatabase() {
   try { db.prepare('ALTER TABLE inventory_items ADD COLUMN category TEXT DEFAULT "Raw Materials"').run(); } catch (e) {}
   try { db.prepare('ALTER TABLE order_items ADD COLUMN notes TEXT').run(); } catch (e) {}
   try { db.prepare("ALTER TABLE orders ADD COLUMN details TEXT DEFAULT 'Counter Pickup'").run(); } catch (e) {}
+  try { db.prepare("ALTER TABLE orders ADD COLUMN source TEXT DEFAULT 'pos'").run(); } catch (e) {}
 
   seedFullChaiwalaMenu();
 }
@@ -335,6 +350,16 @@ function seedFullChaiwalaMenu() {
   for (const it of itemsData) {
     const itemId = `it-cw-${idx++}`;
     itemStmt.run(itemId, it.cat, it.name, it.price, it.emoji, it.tag, it.desc || '');
+  }
+
+  // Ensure default software license for Chai Wala Original
+  const defaultLicense = db.prepare('SELECT * FROM software_licenses WHERE tenant_slug = ?').get('chaiwala-original');
+  if (!defaultLicense) {
+    db.prepare(`
+      INSERT INTO software_licenses (
+        id, tenant_slug, outlet_name, status, plan_name, expires_at, max_terminals, admin_notes
+      ) VALUES (?, ?, ?, 'active', 'Enterprise Cafeteria', '2027-12-31', 10, 'Flagship Main Branch Outlet - All Modules Enabled')
+    `).run('lic-chaiwala-original', 'chaiwala-original', 'Chai Wala Original');
   }
 
   // Ensure default settings exist

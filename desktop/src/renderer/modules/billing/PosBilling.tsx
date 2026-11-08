@@ -182,23 +182,23 @@ export const PosBilling: React.FC = () => {
       <div className="flex-1 flex flex-col h-full overflow-hidden border-r border-[#E2E8F0]">
         {/* Top Search & Cafeteria Mode Bar */}
         <div className="p-3 bg-white border-b border-slate-200 flex items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative flex-1">
+            <Search className="w-5 h-5 text-emerald-700 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Quick search chai, coffee, buns, snacks..."
+              placeholder="Search chai, coffee, bun maska, juices, snacks, biryani by name or price..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#2E7D32]"
+              className="w-full pl-11 pr-4 py-2 bg-slate-50 hover:bg-white border-2 border-slate-200 focus:border-[#2E7D32] rounded-xl text-sm font-bold text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-xs"
             />
           </div>
 
-          <div className="flex bg-slate-100 p-1 rounded-xl">
+          <div className="flex bg-slate-100 p-1.5 rounded-xl shrink-0">
             {(['Takeaway', 'Dine In'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setServiceType(mode)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
                   serviceType === mode
                     ? 'bg-[#1C3F32] text-white shadow'
                     : 'text-slate-600 hover:text-slate-900'

@@ -10,6 +10,7 @@ import { inventoryRouter } from './modules/inventory/inventory.routes';
 import { reportsRouter } from './modules/reports/reports.routes';
 import { customersRouter } from './modules/users/customers.routes';
 import { settingsRouter } from './modules/settings/settings.routes';
+import { licensesRouter } from './modules/settings/licenses.routes';
 import { digitalMenuRouter } from './modules/catalog/digitalMenu.routes';
 
 dotenv.config();
@@ -45,6 +46,7 @@ app.use('/api/inventory', inventoryRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/customers', customersRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/licenses', licensesRouter);
 app.use('/api/digital-menu', digitalMenuRouter);
 
 // Global Error Handler
