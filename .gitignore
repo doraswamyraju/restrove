@@ -49,5 +49,15 @@ desktop/release/
 desktop/release-*/
 desktop/*.zip
 
+# Android and Gradle build artifacts & cache
+.gradle/
+**/android/.gradle/
+**/android/build/
+**/android/app/build/
+**/android/captures/
+**/.cxx/
+*.apk
+*.aab
+
 
 
