@@ -357,3 +357,4 @@ export const LicenseAdminView: React.FC = () => {
     </div>
   );
 };
+
