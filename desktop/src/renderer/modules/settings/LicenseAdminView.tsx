@@ -107,9 +107,14 @@ export const LicenseAdminView: React.FC = () => {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-slate-900">Software Availability &amp; License Admin</h1>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-xl font-black text-slate-900">Restrove Master Administration</h1>
+              <span className="text-[10px] font-black uppercase bg-[#1C3F32] text-amber-300 px-2 py-0.5 rounded-full">
+                Super Admin
+              </span>
+            </div>
             <p className="text-xs text-slate-500 font-semibold">
-              Manage validity periods, service availability, and module permissions for all client versions.
+              Manage client vendors, subscription validity, and feature availability across all Restrove software editions.
             </p>
           </div>
         </div>
@@ -357,4 +362,3 @@ export const LicenseAdminView: React.FC = () => {
     </div>
   );
 };
-

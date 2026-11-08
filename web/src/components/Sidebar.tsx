@@ -28,7 +28,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, order
     { id: 'customers', label: 'Regular Customers', icon: Users },
     { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Cafeteria Settings', icon: Settings },
-    { id: 'license', label: 'Software License Admin', icon: ShieldCheck },
   ];
 
   return (

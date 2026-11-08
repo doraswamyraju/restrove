@@ -17,13 +17,20 @@ import { playChime } from './utils/soundAlert';
 export function App() {
   const [activeTab, setActiveTab] = useState('pos');
   const [isDigitalMenuRoute, setIsDigitalMenuRoute] = useState(false);
+  const [isAdminRoute, setIsAdminRoute] = useState(false);
   const [ordersBadgeCount, setOrdersBadgeCount] = useState<number | undefined>(undefined);
   const [incomingOrderAlert, setIncomingOrderAlert] = useState<any>(null);
 
   useEffect(() => {
-    // Check if customer scanned digital menu QR code (hash or path)
-    if (window.location.hash === '#/digital-menu' || window.location.pathname === '/digital-menu') {
+    // Check routes
+    const hash = window.location.hash;
+    const pathname = window.location.pathname;
+
+    if (hash === '#/digital-menu' || pathname === '/digital-menu') {
       setIsDigitalMenuRoute(true);
+    }
+    if (hash === '#/admin' || pathname === '/admin') {
+      setIsAdminRoute(true);
     }
 
     // Request notification permissions (both browser and native Android)
@@ -115,6 +122,14 @@ export function App() {
 
   if (isDigitalMenuRoute) {
     return <DigitalMenuCard />;
+  }
+
+  if (isAdminRoute) {
+    return (
+      <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC]">
+        <LicenseAdminView />
+      </div>
+    );
   }
 
   return (
