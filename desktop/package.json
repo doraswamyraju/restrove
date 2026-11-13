@@ -3,26 +3,47 @@
   "version": "1.0.0",
   "description": "Restrove POS & Operations Platform - Windows Desktop Application",
   "main": "dist-electron/index.cjs",
+  "author": "Restrove",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-packager . \"Chai Wala POS\" --platform=win32 --arch=x64 --out=release --overwrite --prune=true",
+    "build": "npm run pack:ia32",
+    "pack:ia32": "vite build && electron-packager . \"Chai Wala POS\" --platform=win32 --arch=ia32 --out=release-ia32 --overwrite --prune=true --asar --icon=assets/icon.ico --ignore=\"^/release.*\" --ignore=\"^/src\" --ignore=\"\\.zip$\"",
+    "pack:x64": "vite build && electron-packager . \"Chai Wala POS\" --platform=win32 --arch=x64 --out=release-x64 --overwrite --prune=true --asar --icon=assets/icon.ico --ignore=\"^/release.*\" --ignore=\"^/src\" --ignore=\"\\.zip$\"",
+    "build:installer": "vite build && electron-builder --win nsis --ia32 --publish never",
+    "build:portable": "vite build && electron-builder --win portable --ia32 --publish never",
+    "build:x64": "vite build && electron-builder --win nsis --x64 --publish never",
+    "build:all": "vite build && electron-builder --win nsis --ia32 --x64 --publish never",
     "preview": "vite preview"
   },
   "build": {
     "appId": "com.restrove.chaiwala.pos",
     "productName": "Chai Wala POS",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "doraswamyraju",
-        "repo": "restrove"
-      }
-    ],
     "directories": {
       "output": "release"
     },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Chai Wala POS"
     }
   },
   "dependencies": {

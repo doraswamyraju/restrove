@@ -47,6 +47,7 @@ package-lock.json
 desktop/dist-electron/
 desktop/release/
 desktop/release-*/
+desktop/Chai-Wala-POS-*/
 desktop/*.zip
 
 # Android and Gradle build artifacts & cache
